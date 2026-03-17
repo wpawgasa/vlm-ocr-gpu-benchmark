@@ -1,10 +1,7 @@
 # Phase B: Training benchmark sweep definition
-training:
-  batch_sizes: [1, 2, 4, 8]
-  precisions: [bf16, fp8]
-  lora:
-    r: 16
-    alpha: 32
-    dropout: 0.05
-  num_steps: 50
-  gradient_accumulation_steps: 1
+epochs: 3
+micro_batch_sizes: [1, 2, 4, 8, 16]
+precision_modes: [bf16, fp8]
+dataset: docmatix_50k
+domain_dataset: thai_fin_legal_5k
+runs_per_config: 3

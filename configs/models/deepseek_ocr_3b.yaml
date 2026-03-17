@@ -1,7 +1,11 @@
 # DeepSeek-OCR 3B model configuration
-model:
-  name: deepseek-ocr-3b
-  hf_repo: deepseek-ai/DeepSeek-OCR-3B
-  params_b: 3.0
-  max_image_resolution: 2048
-  max_new_tokens: 4096
+name: deepseek_ocr_3b
+hf_model_id: deepseek-ai/DeepSeek-OCR-3B
+params_billion: 3.0
+tier: compact
+adapter: DeepSeekOcrAdapter
+supported_resolutions: [1024, 1536, 2048]
+max_output_tokens: 4096
+default_prompt_key: document_parse_md
+supports_flash_attn: [flash_attn_2, flash_attn_3, flash_attn_4]
+vision_token_estimate: dynamic

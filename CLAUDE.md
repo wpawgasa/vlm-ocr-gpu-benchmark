@@ -59,7 +59,7 @@ Each module has a dedicated implementation guide with checklist:
 | Module | Guide | Status |
 |--------|-------|--------|
 | Project setup | [docs/impl/01-project-setup.md](docs/impl/01-project-setup.md) | DONE |
-| Configuration system | [docs/impl/02-config.md](docs/impl/02-config.md) | TODO |
+| Configuration system | [docs/impl/02-config.md](docs/impl/02-config.md) | DONE |
 | Hardware abstraction | [docs/impl/03-hardware.md](docs/impl/03-hardware.md) | TODO |
 | Model adapters | [docs/impl/04-models.md](docs/impl/04-models.md) | TODO |
 | Data pipeline | [docs/impl/05-data.md](docs/impl/05-data.md) | TODO |

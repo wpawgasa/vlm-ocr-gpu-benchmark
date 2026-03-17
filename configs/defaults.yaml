@@ -1,16 +1,8 @@
 # Global defaults inherited by all experiment configs
 seed: 42
-num_warmup: 3
-num_runs: 10
-
-output:
-  base_dir: results/
-  format: parquet  # parquet | csv
-
-logging:
-  level: INFO
-  format: json
+output_dir: results
 
 profiling:
   enabled: true
-  interval_ms: 100
+  backend: dcgm
+  sample_interval_ms: 100

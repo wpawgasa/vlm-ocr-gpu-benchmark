@@ -1,17 +1,36 @@
 # Full benchmark: all phases, all models, all GPUs
-experiment:
-  name: full_benchmark
-  description: "Complete B300 vs H100 benchmark across all models and phases"
+name: full_b300_vs_h100
+description: "Complete B300 vs H100 benchmark — all models, all phases"
 
 models:
-  - configs/models/paddleocr_vl_0.9b.yaml
-  - configs/models/dots_ocr_1.5_3b.yaml
-  - configs/models/nanonets_ocr2_3b.yaml
-  - configs/models/deepseek_ocr_3b.yaml
-  - configs/models/olmocr2_7b.yaml
-  - configs/models/chandra_ocr_9b.yaml
+  - paddleocr_vl_0.9b
+  - dots_ocr_1.5_3b
+  - nanonets_ocr2_3b
+  - deepseek_ocr_3b
+  - olmocr2_7b
+  - chandra_ocr_9b
+
+gpus:
+  - h100_sxm
+  - b300_sxm
 
 phases:
-  inference: configs/phases/inference.yaml
-  training: configs/phases/training.yaml
-  quality: configs/phases/quality.yaml
+  - inference
+  - training
+  - quality
+
+inference:
+  batch_sizes: [1, 2, 4, 8, 16, 32]
+  resolutions: [1024, 1536, 2048]
+  max_output_tokens_sweep: [2048, 4096, 8192]
+  warmup_requests: 50
+  measurement_requests: 200
+  runs_per_config: 3
+  cooldown_seconds: 60
+
+training:
+  epochs: 3
+  micro_batch_sizes: [1, 2, 4, 8, 16]
+  dataset: docmatix_50k
+  domain_dataset: thai_fin_legal_5k
+  runs_per_config: 3
