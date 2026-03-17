@@ -1,0 +1,7 @@
+# Nanonets-OCR2 3B model configuration
+model:
+  name: nanonets-ocr2-3b
+  hf_repo: nanonets/Nanonets-OCR-s
+  params_b: 3.0
+  max_image_resolution: 2048
+  max_new_tokens: 4096

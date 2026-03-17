@@ -1,0 +1,18 @@
+# Debug config for development
+experiment:
+  name: single_model_debug
+  description: "Single model debug configuration"
+
+models:
+  - configs/models/paddleocr_vl_0.9b.yaml
+
+phases:
+  inference:
+    batch_sizes: [1]
+    precisions: [bf16]
+    num_warmup: 0
+    num_runs: 1
+    max_new_tokens: 128
+
+logging:
+  level: DEBUG

@@ -1,0 +1,12 @@
+# NVIDIA B300 SXM hardware profile
+hardware:
+  name: B300-SXM
+  gpu_arch: blackwell
+  compute_capability: "10.0"
+  vram_gb: 192
+  memory_bandwidth_tb_s: 8.0
+  tdp_w: 1000
+  fp16_tflops: 2250.0
+  bf16_tflops: 2250.0
+  fp8_tflops: 4500.0
+  fp4_tflops: 9000.0

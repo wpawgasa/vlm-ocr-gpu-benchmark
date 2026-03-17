@@ -1,0 +1,7 @@
+# DeepSeek-OCR 3B model configuration
+model:
+  name: deepseek-ocr-3b
+  hf_repo: deepseek-ai/DeepSeek-OCR-3B
+  params_b: 3.0
+  max_image_resolution: 2048
+  max_new_tokens: 4096

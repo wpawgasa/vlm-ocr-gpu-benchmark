@@ -1,0 +1,13 @@
+# Phase C: Quality evaluation definition
+quality:
+  benchmarks:
+    - omnidocbench
+    - olmocr_bench
+    - real5_omnidoc
+  metrics:
+    - edit_distance
+    - bleu
+    - meteor
+    - cdm
+    - structural
+  max_samples: null  # null = all available

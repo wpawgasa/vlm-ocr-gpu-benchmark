@@ -1,0 +1,17 @@
+# Full benchmark: all phases, all models, all GPUs
+experiment:
+  name: full_benchmark
+  description: "Complete B300 vs H100 benchmark across all models and phases"
+
+models:
+  - configs/models/paddleocr_vl_0.9b.yaml
+  - configs/models/dots_ocr_1.5_3b.yaml
+  - configs/models/nanonets_ocr2_3b.yaml
+  - configs/models/deepseek_ocr_3b.yaml
+  - configs/models/olmocr2_7b.yaml
+  - configs/models/chandra_ocr_9b.yaml
+
+phases:
+  inference: configs/phases/inference.yaml
+  training: configs/phases/training.yaml
+  quality: configs/phases/quality.yaml
