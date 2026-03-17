@@ -1,13 +1,15 @@
 # Phase C: Quality evaluation definition
-quality:
-  benchmarks:
-    - omnidocbench
-    - olmocr_bench
-    - real5_omnidoc
-  metrics:
-    - edit_distance
-    - bleu
-    - meteor
-    - cdm
-    - structural
-  max_samples: null  # null = all available
+benchmarks:
+  - omnidocbench_v1.5
+  - olmocr_bench
+  - real5_omnidocbench
+  - thai_docs_500
+metrics:
+  - edit_distance
+  - bleu
+  - meteor
+  - cdm
+  - structural_table
+  - structural_formula
+precision_modes: [bf16, fp8, fp4]
+per_document_type: true

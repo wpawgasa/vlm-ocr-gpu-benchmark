@@ -1,7 +1,9 @@
 # Phase A: Inference benchmark sweep definition
-inference:
-  batch_sizes: [1, 2, 4, 8, 16, 32]
-  precisions: [fp16, bf16, fp8]
-  num_warmup: 3
-  num_runs: 10
-  max_new_tokens: 4096
+batch_sizes: [1, 2, 4, 8, 16, 32]
+resolutions: [1024, 1536, 2048]
+max_output_tokens_sweep: [2048, 4096, 8192]
+precision_modes: [bf16, fp8]
+warmup_requests: 50
+measurement_requests: 200
+runs_per_config: 3
+cooldown_seconds: 60

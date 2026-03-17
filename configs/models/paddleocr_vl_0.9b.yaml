@@ -1,7 +1,11 @@
 # PaddleOCR-VL 0.9B model configuration
-model:
-  name: paddleocr-vl-0.9b
-  hf_repo: PaddlePaddle/PaddleOCR-VL-0.9B
-  params_b: 0.9
-  max_image_resolution: 1024
-  max_new_tokens: 4096
+name: paddleocr_vl_0.9b
+hf_model_id: PaddlePaddle/PaddleOCR-VL-0.9B
+params_billion: 0.9
+tier: ultra_compact
+adapter: PaddleOcrVlAdapter
+supported_resolutions: [1024]
+max_output_tokens: 4096
+default_prompt_key: document_parse_md
+supports_flash_attn: [flash_attn_2, flash_attn_3, flash_attn_4]
+vision_token_estimate: dynamic

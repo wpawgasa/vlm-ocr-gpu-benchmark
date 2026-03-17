@@ -1,7 +1,11 @@
 # Chandra-OCR 9B model configuration
-model:
-  name: chandra-ocr-9b
-  hf_repo: amaai-lab/Chandra-OCR-9B
-  params_b: 9.0
-  max_image_resolution: 2048
-  max_new_tokens: 8192
+name: chandra_ocr_9b
+hf_model_id: amaai-lab/Chandra-OCR-9B
+params_billion: 9.0
+tier: midsize
+adapter: ChandraOcrAdapter
+supported_resolutions: [1024, 1536, 2048]
+max_output_tokens: 8192
+default_prompt_key: document_parse_md
+supports_flash_attn: [flash_attn_2, flash_attn_3, flash_attn_4]
+vision_token_estimate: dynamic

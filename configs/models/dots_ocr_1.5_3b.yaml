@@ -1,7 +1,11 @@
 # Dots.OCR 1.5 3B model configuration
-model:
-  name: dots-ocr-1.5-3b
-  hf_repo: dots-ai/dots.ocr1.5-3B
-  params_b: 3.0
-  max_image_resolution: 2048
-  max_new_tokens: 4096
+name: dots_ocr_1.5_3b
+hf_model_id: rednote-hilab/dots.ocr-1.5
+params_billion: 3.0
+tier: compact
+adapter: DotsOcrAdapter
+supported_resolutions: [1024, 1536, 2048]
+max_output_tokens: 8192
+default_prompt_key: document_parse_md
+supports_flash_attn: [flash_attn_2, flash_attn_3, flash_attn_4]
+vision_token_estimate: dynamic

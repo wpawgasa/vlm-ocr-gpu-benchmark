@@ -91,6 +91,7 @@ module = [
     "sacrebleu.*",
     "pdf2image.*",
     "plotly.*",
+    "yaml.*",
 ]
 ignore_missing_imports = true
 

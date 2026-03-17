@@ -1,7 +1,11 @@
 # olmOCR2 7B model configuration
-model:
-  name: olmocr2-7b
-  hf_repo: allenai/olmOCR2-7B-0225-preview
-  params_b: 7.0
-  max_image_resolution: 2048
-  max_new_tokens: 8192
+name: olmocr2_7b
+hf_model_id: allenai/olmOCR2-7B-0225-preview
+params_billion: 7.0
+tier: midsize
+adapter: OlmOcrAdapter
+supported_resolutions: [1024, 1536, 2048]
+max_output_tokens: 8192
+default_prompt_key: document_parse_md
+supports_flash_attn: [flash_attn_2, flash_attn_3, flash_attn_4]
+vision_token_estimate: dynamic
