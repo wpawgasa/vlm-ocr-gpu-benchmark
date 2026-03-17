@@ -1,0 +1,11 @@
+# NVIDIA H100 SXM hardware profile
+hardware:
+  name: H100-SXM
+  gpu_arch: hopper
+  compute_capability: "9.0"
+  vram_gb: 80
+  memory_bandwidth_tb_s: 3.35
+  tdp_w: 700
+  fp16_tflops: 989.4
+  bf16_tflops: 989.4
+  fp8_tflops: 1978.9

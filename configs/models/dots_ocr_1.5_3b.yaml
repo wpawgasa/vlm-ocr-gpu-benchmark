@@ -1,0 +1,7 @@
+# Dots.OCR 1.5 3B model configuration
+model:
+  name: dots-ocr-1.5-3b
+  hf_repo: dots-ai/dots.ocr1.5-3B
+  params_b: 3.0
+  max_image_resolution: 2048
+  max_new_tokens: 4096

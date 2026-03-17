@@ -1,0 +1,7 @@
+# Chandra-OCR 9B model configuration
+model:
+  name: chandra-ocr-9b
+  hf_repo: amaai-lab/Chandra-OCR-9B
+  params_b: 9.0
+  max_image_resolution: 2048
+  max_new_tokens: 8192

@@ -1,0 +1,7 @@
+# olmOCR2 7B model configuration
+model:
+  name: olmocr2-7b
+  hf_repo: allenai/olmOCR2-7B-0225-preview
+  params_b: 7.0
+  max_image_resolution: 2048
+  max_new_tokens: 8192

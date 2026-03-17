@@ -1,0 +1,15 @@
+# Quick smoke test: 1 model, 1 batch size — CI validation
+experiment:
+  name: quick_smoke
+  description: "Minimal smoke test for CI validation"
+
+models:
+  - configs/models/paddleocr_vl_0.9b.yaml
+
+phases:
+  inference:
+    batch_sizes: [1]
+    precisions: [bf16]
+    num_warmup: 1
+    num_runs: 2
+    max_new_tokens: 256
