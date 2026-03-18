@@ -1,4 +1,4 @@
-"""Docmatix training dataset loader with stratified sampling."""
+"""Docmatix training dataset loader with sequential sampling."""
 
 from __future__ import annotations
 
@@ -14,10 +14,10 @@ logger = structlog.get_logger()
 
 
 class DocmatixLoader(DatasetLoader):
-    """Load stratified sample from Docmatix for training benchmarks."""
+    """Load sequential sample from Docmatix for training benchmarks."""
 
     def load(self) -> list[DocSample]:
-        """Download from HuggingFace and apply stratified sampling."""
+        """Download from HuggingFace and apply sequential sampling up to sample_size."""
         from datasets import load_dataset
 
         logger.info(
@@ -34,7 +34,7 @@ class DocmatixLoader(DatasetLoader):
             streaming=True,
         )
 
-        # Stratified sampling by doc_type if configured
+        # Sequential sampling up to target_size
         target_size = self.spec.sample_size or 50000
         samples: list[DocSample] = []
         type_counts: dict[str, int] = {}

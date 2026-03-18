@@ -72,5 +72,8 @@ def build_inference_input(
         result["prompt"] = prompt_data["prompt"]
     elif "messages" in prompt_data:
         result["prompt"] = prompt_data["messages"]
+    else:
+        msg = f"Adapter returned no 'prompt' or 'messages' key: {list(prompt_data.keys())}"
+        raise ValueError(msg)
 
     return result

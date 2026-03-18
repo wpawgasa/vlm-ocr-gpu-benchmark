@@ -34,7 +34,7 @@ class Real5OmniDocLoader(DatasetLoader):
 
         ds = load_dataset(
             self.spec.hf_id,
-            split="test",
+            split=self.spec.split or "test",
             trust_remote_code=True,
         )
 

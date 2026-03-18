@@ -525,6 +525,14 @@ class TestBuildInferenceInput:
         # With padding, image should be square
         assert processed_image.size[0] == processed_image.size[1]
 
+    def test_invalid_adapter_raises_value_error(self, rgb_image: Image.Image) -> None:
+        """Adapter returning neither 'prompt' nor 'messages' should raise ValueError."""
+        adapter = MagicMock()
+        adapter.build_prompt.return_value = {"images": [rgb_image]}
+
+        with pytest.raises(ValueError, match="no 'prompt' or 'messages' key"):
+            build_inference_input(adapter, rgb_image, OutputFormat.MARKDOWN, resolution=1024)
+
 
 # ─── Module Export Tests ───
 
