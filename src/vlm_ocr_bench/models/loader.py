@@ -74,12 +74,16 @@ def load_model_and_tokenizer(
 
     model = AutoModelForCausalLM.from_pretrained(model_id, **model_kwargs)
 
-    tokenizer = AutoTokenizer.from_pretrained(model_id, trust_remote_code=True)
+    tokenizer = AutoTokenizer.from_pretrained(  # type: ignore[no-untyped-call]
+        model_id, trust_remote_code=True
+    )
 
     # Try loading processor (for vision models)
     processor = None
     try:
-        processor = AutoProcessor.from_pretrained(model_id, trust_remote_code=True)
+        processor = AutoProcessor.from_pretrained(  # type: ignore[no-untyped-call]
+            model_id, trust_remote_code=True
+        )
     except Exception:
         logger.debug("no_processor_found", model_id=model_id)
 
