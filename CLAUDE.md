@@ -63,7 +63,7 @@ Each module has a dedicated implementation guide with checklist:
 | Hardware abstraction | [docs/impl/03-hardware.md](docs/impl/03-hardware.md) | DONE |
 | Model adapters | [docs/impl/04-models.md](docs/impl/04-models.md) | DONE |
 | Data pipeline | [docs/impl/05-data.md](docs/impl/05-data.md) | DONE |
-| Inference benchmark (Phase A) | [docs/impl/06-inference.md](docs/impl/06-inference.md) | TODO |
+| Inference benchmark (Phase A) | [docs/impl/06-inference.md](docs/impl/06-inference.md) | DONE |
 | Training benchmark (Phase B) | [docs/impl/07-training.md](docs/impl/07-training.md) | TODO |
 | Quality evaluation (Phase C) | [docs/impl/08-evaluation.md](docs/impl/08-evaluation.md) | TODO |
 | Profiling & monitoring | [docs/impl/09-profiling.md](docs/impl/09-profiling.md) | TODO |
