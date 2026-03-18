@@ -22,15 +22,20 @@ class MemoryStats:
 
 @dataclass
 class EngineInfo:
-    """Information about a loaded vLLM engine."""
+    """Information about a loaded vLLM engine.
+
+    Note: ``flash_attn_version`` and ``max_batch_size`` are not populated by
+    vLLM at engine-init time and remain at their default sentinel values.
+    They are kept for schema compatibility but should not be relied upon.
+    """
 
     model_load_time_s: float = 0.0
     gpu_memory_allocated_gb: float = 0.0
     gpu_memory_reserved_gb: float = 0.0
-    flash_attn_version: str = "unknown"
+    flash_attn_version: str = "unknown"  # not queryable from vLLM LLM API
     actual_precision: str = "unknown"
     kv_cache_dtype: str = "auto"
-    max_batch_size: int = 0
+    max_batch_size: int = 0  # not queryable from vLLM LLM API
     max_model_len: int = 0
 
 
@@ -132,16 +137,19 @@ class VLLMEngine:
 
         wall_start = time.monotonic()
 
-        # Build prompts and multi-modal data for vLLM
-        prompts = []
-        multi_modal_data_list = []
+        # Build vLLM inputs, forwarding multi_modal_data per-prompt so images
+        # are actually passed to the vision encoder (not silently dropped).
+        vllm_inputs: list[Any] = []
         for inp in inputs:
-            prompts.append(inp.get("prompt", ""))
-            multi_modal_data_list.append(inp.get("multi_modal_data"))
+            entry: dict[str, Any] = {"prompt": inp.get("prompt", "")}
+            mm_data = inp.get("multi_modal_data")
+            if mm_data is not None:
+                entry["multi_modal_data"] = mm_data
+            vllm_inputs.append(entry)
 
         # vLLM generate
         outputs = self._engine.generate(
-            prompts,
+            vllm_inputs,
             sampling_params,
         )
 
@@ -155,7 +163,14 @@ class VLLMEngine:
         else:
             gpu_elapsed_ms = wall_elapsed_ms
 
-        # Build results
+        # Build results.
+        #
+        # Latency attribution note: vLLM uses continuous batching so requests
+        # within a batch may complete at very different times.  Dividing the
+        # total GPU interval evenly across all outputs is a simplification —
+        # per-request latencies will be identical for batch_size > 1, making
+        # percentiles meaningful only when batch_size == 1.  Accurate per-
+        # request timing requires the AsyncLLMEngine with streaming callbacks.
         per_request_ms = gpu_elapsed_ms / max(len(outputs), 1)
 
         for output in outputs:
@@ -174,7 +189,9 @@ class VLLMEngine:
                     output_text=generated_text,
                     num_output_tokens=num_output_tokens,
                     num_input_tokens=num_input_tokens,
-                    ttft_ms=per_request_ms * 0.1,  # Approximate TTFT
+                    # TTFT requires streaming (AsyncLLMEngine); not available in
+                    # batch mode.  Report 0.0 so callers can detect the absence.
+                    ttft_ms=0.0,
                     generation_time_ms=per_request_ms,
                     total_time_ms=per_request_ms,
                     tokens_per_second=tps,
@@ -215,6 +232,6 @@ class VLLMEngine:
             if torch.cuda.is_available():
                 torch.cuda.empty_cache()
         except Exception:
-            pass
+            logger.debug("vllm_engine_shutdown_cache_clear_failed", exc_info=True)
 
         logger.info("vllm_engine_shutdown_complete")

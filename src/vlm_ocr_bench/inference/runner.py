@@ -45,7 +45,9 @@ class InferenceBenchmarkResult:
 
     model_name: str
     gpu_type: str
-    engine_info: EngineInfo | None = None
+    # Keyed by precision value (e.g. "bf16", "fp8") because a new engine is
+    # initialised for each precision; storing all infos avoids overwriting.
+    engine_infos: dict[str, EngineInfo] = field(default_factory=dict)
     configs: list[SingleConfigResult] = field(default_factory=list)
     total_wall_time_s: float = 0.0
 
@@ -108,7 +110,7 @@ class InferenceBenchmarkRunner:
 
             try:
                 engine_info = engine.initialize()
-                result.engine_info = engine_info
+                result.engine_infos[precision.value] = engine_info
             except Exception:
                 logger.error(
                     "engine_init_failed",
@@ -237,7 +239,8 @@ class InferenceBenchmarkRunner:
             requires_padding=self._model_config.requires_padding,
         )
 
-        # Warmup
+        # Warmup: run_id resets to 0 for every (resolution, max_tokens, batch_size)
+        # combination, so warmup fires once per unique config — not only globally.
         if run_id == 0 and self._inference_config.warmup_requests > 0:
             self._warmup(engine, workload, sampling_params)
 
@@ -248,6 +251,13 @@ class InferenceBenchmarkRunner:
         requests_done = 0
         while requests_done < self._inference_config.measurement_requests:
             batch_results = engine.generate_batch(workload, sampling_params)
+            if not batch_results:
+                logger.error(
+                    "generate_batch_returned_empty",
+                    requests_done=requests_done,
+                    target=self._inference_config.measurement_requests,
+                )
+                break
             all_results.extend(batch_results)
             requests_done += len(batch_results)
 
@@ -292,7 +302,10 @@ class InferenceBenchmarkRunner:
 
         done = 0
         while done < warmup_count:
-            engine.generate_batch(workload, sampling_params)
+            results = engine.generate_batch(workload, sampling_params)
+            if not results:
+                logger.error("warmup_generate_batch_returned_empty")
+                break
             done += len(workload)
 
         logger.info("warmup_complete", num_requests=done)

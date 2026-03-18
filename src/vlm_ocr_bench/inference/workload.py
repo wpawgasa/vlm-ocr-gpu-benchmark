@@ -5,7 +5,7 @@ from __future__ import annotations
 from typing import Any
 
 import structlog
-from PIL import Image
+from PIL import Image, ImageDraw
 
 from vlm_ocr_bench.config.schema import OutputFormat
 from vlm_ocr_bench.data.image_utils import preprocess_image
@@ -17,10 +17,30 @@ logger = structlog.get_logger()
 def generate_synthetic_image(resolution: int) -> Image.Image:
     """Generate a synthetic document-like image for benchmarking.
 
-    Creates a simple RGB image at the target resolution.
-    Real benchmarking should use actual document images from the dataset.
+    Draws deterministic horizontal text-line bands so the vision encoder
+    sees edges and contrast rather than a blank white image, giving more
+    representative GPU utilisation.  Real benchmarking should use actual
+    document images from the dataset.
     """
-    return Image.new("RGB", (resolution, int(resolution * 1.414)), color=(255, 255, 255))
+    width = resolution
+    height = int(resolution * 1.414)
+    img = Image.new("RGB", (width, height), color=(245, 245, 245))
+    draw = ImageDraw.Draw(img)
+
+    margin = width // 10
+    line_h = max(width // 60, 3)
+    spacing = line_h * 4
+
+    y = margin
+    line_idx = 0
+    while y + line_h < height - margin:
+        # Every 5th line is shorter (paragraph indent / end-of-line effect)
+        line_w = width - 2 * margin if line_idx % 5 != 4 else (width - 2 * margin) * 2 // 3
+        draw.rectangle([margin, y, margin + line_w, y + line_h], fill=(70, 70, 70))
+        y += spacing
+        line_idx += 1
+
+    return img
 
 
 def build_workload_batch(

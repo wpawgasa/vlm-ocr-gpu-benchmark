@@ -28,19 +28,27 @@ def build_vllm_engine_args(
     Merges base args, GPU-specific optimizations, precision config,
     and adapter-specific kwargs.
     """
-    # Base args
+    # Base args.
+    # max_model_len must fit: image tokens (up to ~3000 for high-res VLMs)
+    # + system/OCR prompt (~500) + output tokens.  Using output_tokens * 2
+    # is too small for VLMs; add a 4096-token buffer for image+prompt tokens.
+    max_model_len = max(model_config.max_output_tokens + 4096, 8192)
     args: dict[str, Any] = {
         "model": model_config.hf_model_id,
         "trust_remote_code": True,
         "tensor_parallel_size": gpu_config.tensor_parallel,
         "gpu_memory_utilization": 0.90,
-        "max_model_len": model_config.max_output_tokens * 2,
+        "max_model_len": max_model_len,
         "enforce_eager": False,
     }
 
-    # GPU-specific flash attention
-    if gpu_config.gpu_type == GPUType.B300_SXM or gpu_config.gpu_type == GPUType.H100_SXM:
-        args["enable_flashattn"] = True
+    # GPU-specific attention backend.
+    # B300 (Blackwell) uses FlashMLA; H100 uses standard FlashAttention.
+    # vLLM selects these via `attention_backend`, not the invalid `enable_flashattn`.
+    if gpu_config.gpu_type == GPUType.B300_SXM:
+        args["attention_backend"] = "FLASHMLA"
+    elif gpu_config.gpu_type == GPUType.H100_SXM:
+        args["attention_backend"] = "FLASH_ATTN"
 
     # Precision-specific config
     _apply_precision_config(args, precision, gpu_config)

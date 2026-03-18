@@ -428,7 +428,7 @@ class TestInferenceBenchmarkResult:
             gpu_type="h100_sxm",
         )
         assert r.configs == []
-        assert r.engine_info is None
+        assert r.engine_infos == {}
         assert r.total_wall_time_s == 0.0
 
 
