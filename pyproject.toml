@@ -96,7 +96,10 @@ module = [
 ignore_missing_imports = true
 
 [[tool.mypy.overrides]]
-module = "vlm_ocr_bench.models.loader"
+module = [
+    "vlm_ocr_bench.models.loader",
+    "vlm_ocr_bench.inference.engine",
+]
 warn_unused_ignores = false
 
 [[tool.mypy.overrides]]
