@@ -15,7 +15,7 @@ logger = structlog.get_logger()
 try:
     from transformers import TrainerCallback as _TrainerCallback
 except ImportError:
-    _TrainerCallback = object  # type: ignore[assignment,unused-ignore]
+    _TrainerCallback = object  # type: ignore[assignment,misc,unused-ignore]
 
 
 @dataclass
@@ -27,7 +27,7 @@ class StepMetric:
     timestamp: float = 0.0
 
 
-class ThroughputCallback(_TrainerCallback):  # type: ignore[misc]
+class ThroughputCallback(_TrainerCallback):  # type: ignore[misc,unused-ignore]
     """Track samples/s and tokens/s per training step.
 
     Subclasses ``transformers.TrainerCallback`` so HF Trainer dispatches
@@ -95,7 +95,7 @@ class ThroughputCallback(_TrainerCallback):  # type: ignore[misc]
         return sum(m.value for m in self.tokens_per_second) / len(self.tokens_per_second)
 
 
-class MemoryCallback(_TrainerCallback):  # type: ignore[misc]
+class MemoryCallback(_TrainerCallback):  # type: ignore[misc,unused-ignore]
     """Track peak GPU memory per training step."""
 
     def __init__(self) -> None:
@@ -169,7 +169,7 @@ class PowerSample:
     timestamp: float = 0.0
 
 
-class PowerCallback(_TrainerCallback):  # type: ignore[misc]
+class PowerCallback(_TrainerCallback):  # type: ignore[misc,unused-ignore]
     """Track power draw via hardware/power.py during training.
 
     Uses the existing PowerReader for background sampling, and records
