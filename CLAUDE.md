@@ -70,7 +70,7 @@ Each module has a dedicated implementation guide with checklist:
 | Analysis & reporting | [docs/impl/10-analysis.md](docs/impl/10-analysis.md) | DONE |
 | CLI & orchestration | [docs/impl/11-cli.md](docs/impl/11-cli.md) | DONE |
 | Containerization | [docs/impl/12-containers.md](docs/impl/12-containers.md) | DONE |
-| Testing | [docs/impl/13-testing.md](docs/impl/13-testing.md) | TODO |
+| Testing | [docs/impl/13-testing.md](docs/impl/13-testing.md) | DONE |
 
 ## Implementation Order
 
