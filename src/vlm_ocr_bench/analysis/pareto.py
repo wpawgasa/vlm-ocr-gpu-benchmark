@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import dataclasses
 from dataclasses import dataclass, field
 from pathlib import Path
 
@@ -44,8 +45,11 @@ def compute_pareto_frontier(
     if not points:
         return ParetoResult()
 
+    # Work with copies to avoid mutating the caller's objects
+    point_copies = [dataclasses.replace(p, is_pareto_optimal=False) for p in points]
+
     # Sort by throughput descending
-    sorted_pts = sorted(points, key=lambda p: p.throughput, reverse=True)
+    sorted_pts = sorted(point_copies, key=lambda p: p.throughput, reverse=True)
 
     frontier: list[ParetoPoint] = []
     max_quality = -float("inf")
@@ -59,7 +63,7 @@ def compute_pareto_frontier(
     # Sort frontier by throughput for plotting
     frontier.sort(key=lambda p: p.throughput)
 
-    return ParetoResult(points=points, frontier=frontier)
+    return ParetoResult(points=point_copies, frontier=frontier)
 
 
 def plot_pareto(

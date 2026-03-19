@@ -141,7 +141,11 @@ def aggregate_inference_results(
         )
 
         for metric_name in _INFERENCE_METRIC_FIELDS:
-            values = [float(r.get(metric_name, 0.0)) for r in rows]
+            values = []
+            for r in rows:
+                if r.get(metric_name) is None and metric_name not in r:
+                    logger.warning("missing_metric_field", metric=metric_name, config=key)
+                values.append(float(r.get(metric_name, 0.0)))
             config.metrics[metric_name] = _aggregate_metric(metric_name, values)
 
         aggregated.append(config)
@@ -195,7 +199,11 @@ def aggregate_training_results(
         )
 
         for metric_name in _TRAINING_METRIC_FIELDS:
-            values = [float(r.get(metric_name, 0.0)) for r in rows]
+            values = []
+            for r in rows:
+                if r.get(metric_name) is None and metric_name not in r:
+                    logger.warning("missing_metric_field", metric=metric_name, config=key)
+                values.append(float(r.get(metric_name, 0.0)))
             config.metrics[metric_name] = _aggregate_metric(metric_name, values)
 
         aggregated.append(config)

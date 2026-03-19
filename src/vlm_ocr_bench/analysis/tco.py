@@ -30,10 +30,11 @@ class TCOResult:
     monthly_power_cost: float = 0.0
     monthly_total: float = 0.0
 
-    # Annual costs
-    annual_gpu_rental: float = 0.0
-    annual_power_cost: float = 0.0
-    annual_total: float = 0.0
+    # Projected costs over projection_months (renamed from annual_* to avoid confusion
+    # when projection_months != 12)
+    projected_gpu_rental: float = 0.0
+    projected_power_cost: float = 0.0
+    projected_total: float = 0.0
 
     # Per-unit costs
     cost_per_1k_pages: float = 0.0
@@ -91,10 +92,10 @@ def compute_tco(
     )
     result.monthly_total = result.monthly_gpu_rental + result.monthly_power_cost
 
-    # Annual costs
-    result.annual_gpu_rental = result.monthly_gpu_rental * 12
-    result.annual_power_cost = result.monthly_power_cost * 12
-    result.annual_total = result.monthly_total * 12
+    # Projected costs over the configured projection_months
+    result.projected_gpu_rental = result.monthly_gpu_rental * params.projection_months
+    result.projected_power_cost = result.monthly_power_cost * params.projection_months
+    result.projected_total = result.monthly_total * params.projection_months
 
     # Cost per 1K pages
     total_pages_per_month = params.pages_per_day * days_per_month

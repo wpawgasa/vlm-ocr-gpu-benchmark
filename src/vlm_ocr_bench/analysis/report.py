@@ -9,7 +9,7 @@ from typing import Any
 
 import structlog
 
-from vlm_ocr_bench.analysis.aggregator import AggregatedConfig
+from vlm_ocr_bench.analysis.aggregator import AggregatedConfig, AggregatedMetric
 
 logger = structlog.get_logger()
 
@@ -45,8 +45,12 @@ class ReportGenerator:
         self._data = data
         self._output_dir = Path(output_dir)
 
-    def generate(self) -> Path:
+    def generate(self, filename: str | None = None) -> Path:
         """Generate the full Markdown report.
+
+        Args:
+            filename: output filename (e.g. "report.md"). If None, a timestamped
+                filename is used to avoid overwriting previous reports.
 
         Returns:
             Path to the generated report file.
@@ -91,7 +95,10 @@ class ReportGenerator:
 
         # Write file
         self._output_dir.mkdir(parents=True, exist_ok=True)
-        report_path = self._output_dir / "report.md"
+        if filename is None:
+            timestamp = datetime.datetime.now(tz=datetime.UTC).strftime("%Y%m%d_%H%M%S")
+            filename = f"report_{timestamp}.md"
+        report_path = self._output_dir / filename
         report_path.write_text(report_text, encoding="utf-8")
 
         logger.info("report_generated", path=str(report_path), sections=len(sections))
@@ -119,9 +126,6 @@ class ReportGenerator:
                     f"**Best throughput:** {pps.mean:.1f} pages/s "
                     f"({best.model_name}, {best.gpu_type}, {best.precision})"
                 )
-
-        if not lines:
-            lines.append("No results available for summary.")
 
         return ReportSection(title="Executive Summary", content="\n".join(lines))
 
@@ -254,14 +258,14 @@ class ReportGenerator:
 
         lines.append("### Cost Comparison")
         lines.append("")
-        lines.append("| Config | GPUs Required | Monthly Cost | Annual Cost | Cost/1K Pages |")
-        lines.append("|--------|---------------|--------------|-------------|---------------|")
+        lines.append("| Config | GPUs Required | Monthly Cost | Projected Total | Cost/1K Pages |")
+        lines.append("|--------|---------------|--------------|-----------------|---------------|")
 
         for label, tco in self._data.tco_results.items():
             lines.append(
                 f"| {label} | {tco.get('gpus_required', 0)} | "
                 f"${tco.get('monthly_total', 0):,.0f} | "
-                f"${tco.get('annual_total', 0):,.0f} | "
+                f"${tco.get('projected_total', tco.get('annual_total', 0)):,.0f} | "
                 f"${tco.get('cost_per_1k_pages', 0):.3f} |"
             )
 
@@ -323,8 +327,6 @@ class ReportGenerator:
         return ReportSection(title="Appendix", content="\n".join(lines))
 
 
-def _empty_metric() -> Any:
+def _empty_metric() -> AggregatedMetric:
     """Return a stub metric with mean=0 for safe access."""
-    from vlm_ocr_bench.analysis.aggregator import AggregatedMetric
-
     return AggregatedMetric(name="empty")

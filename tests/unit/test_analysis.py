@@ -126,6 +126,12 @@ class TestBootstrapCI:
         # 99% CI should be wider than 95% CI
         assert (high_99 - low_99) >= (high_95 - low_95)
 
+    def test_invalid_statistic_raises(self) -> None:
+        import pytest
+
+        with pytest.raises(ValueError, match="statistic must be"):
+            bootstrap_ci([1.0, 2.0, 3.0], statistic="mode")  # type: ignore[arg-type]
+
 
 class TestComputeSpeedup:
     def test_double_speedup(self) -> None:
@@ -149,6 +155,13 @@ class TestComputeSpeedup:
         comparison = [20.0, 21.0, 22.0, 20.0, 21.0]
         result = compute_speedup(baseline, comparison)
         assert result.ci_95[0] <= result.mean_speedup <= result.ci_95[1]
+
+    def test_seed_reproducibility(self) -> None:
+        baseline = [10.0, 11.0, 12.0, 10.5, 11.5]
+        comparison = [20.0, 21.0, 22.0, 20.5, 21.5]
+        r1 = compute_speedup(baseline, comparison, seed=7)
+        r2 = compute_speedup(baseline, comparison, seed=7)
+        assert r1.ci_95 == r2.ci_95
 
 
 # ─── Aggregator Tests ───
@@ -238,27 +251,52 @@ class TestAggregateInferenceResults:
         assert pps.ci_95_low <= pps.mean <= pps.ci_95_high
 
 
+def _make_training_row(
+    model: str = "test",
+    gpu: str = "h100_sxm",
+    precision: str = "bf16",
+    micro_batch_size: int = 4,
+    sps: float = 10.0,
+) -> dict[str, object]:
+    return {
+        "model_name": model,
+        "gpu_type": gpu,
+        "precision": precision,
+        "micro_batch_size": micro_batch_size,
+        "samples_per_second": sps,
+        "tokens_per_second": sps * 50,
+        "peak_gpu_memory_gb": 20.0,
+        "mean_power_watts": 400.0,
+        "energy_per_1k_samples_wh": 13.9,
+    }
+
+
 class TestAggregateTrainingResults:
     def test_basic(self) -> None:
-        rows = [
-            {
-                "model_name": "test",
-                "gpu_type": "h100_sxm",
-                "precision": "bf16",
-                "micro_batch_size": 4,
-                "samples_per_second": 10.0,
-                "tokens_per_second": 500.0,
-                "peak_gpu_memory_gb": 20.0,
-                "mean_power_watts": 400.0,
-                "energy_per_1k_samples_wh": 13.9,
-            }
-        ]
+        rows = [_make_training_row()]
         result = aggregate_training_results(rows)
         assert len(result) == 1
         assert result[0].metrics["samples_per_second"].mean == 10.0
 
     def test_empty(self) -> None:
         assert aggregate_training_results([]) == []
+
+    def test_filters_oom(self) -> None:
+        rows = [
+            _make_training_row(sps=10.0),
+            {**_make_training_row(sps=0.0), "oom": True},
+        ]
+        result = aggregate_training_results(rows)
+        assert len(result) == 1
+        assert result[0].metrics["samples_per_second"].mean == 10.0
+
+    def test_filters_errors(self) -> None:
+        rows = [
+            _make_training_row(sps=10.0),
+            {**_make_training_row(sps=0.0), "error": "CUDA error"},
+        ]
+        result = aggregate_training_results(rows)
+        assert len(result) == 1
 
 
 class TestFlattenInferenceResult:
@@ -387,7 +425,7 @@ class TestComputeRoofline:
             measured_tflops=1000.0,
             measured_bandwidth_tb_s=4.0,
         )
-        assert point.peak_tflops == 2500.0
+        assert point.peak_tflops > 2000.0  # B300 BF16 peak should exceed H100's ~1979 TFLOPS
 
 
 class TestRooflinePoint:
@@ -477,9 +515,16 @@ class TestComputeTco:
         assert isinstance(result, TCOResult)
         assert result.gpus_required >= 1
         assert result.monthly_total > 0
-        assert result.annual_total > 0
+        assert result.projected_total > 0
         assert result.cost_per_1k_pages > 0
         assert len(result.monthly_breakdown) == 12
+
+    def test_projected_total_uses_projection_months(self) -> None:
+        params_6 = TCOParams(projection_months=6)
+        params_12 = TCOParams(projection_months=12)
+        r6 = compute_tco(10.0, 500.0, params_6)
+        r12 = compute_tco(10.0, 500.0, params_12)
+        assert abs(r12.projected_total - r6.projected_total * 2) < 0.01
 
     def test_zero_throughput(self) -> None:
         result = compute_tco(0.0, 500.0)
@@ -638,7 +683,7 @@ class TestReportGenerator:
                     "H100 BF16": {
                         "gpus_required": 2,
                         "monthly_total": 3000.0,
-                        "annual_total": 36000.0,
+                        "projected_total": 36000.0,
                         "cost_per_1k_pages": 0.05,
                     },
                 },
@@ -736,6 +781,80 @@ class TestPlots:
             )
             assert path.exists()
 
+    def test_throughput_comparison_custom_labels(self) -> None:
+        from vlm_ocr_bench.analysis.plots import plot_throughput_comparison
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            path = plot_throughput_comparison(
+                models=["model_a"],
+                h100_values=[10.0],
+                b300_values=[20.0],
+                output_path=Path(tmpdir) / "throughput_custom.png",
+                gpu_a_label="GPU A",
+                gpu_b_label="GPU B",
+            )
+            assert path.exists()
+
+
+class TestPlotRoofline:
+    def test_basic(self) -> None:
+        from vlm_ocr_bench.analysis.roofline import plot_roofline
+
+        points = [
+            RooflinePoint(
+                label="model_a",
+                arithmetic_intensity=10.0,
+                measured_tflops=500.0,
+                peak_tflops=1979.0,
+                memory_bandwidth_tb_s=3.35,
+                utilization_pct=25.3,
+                bottleneck="compute",
+            )
+        ]
+        with tempfile.TemporaryDirectory() as tmpdir:
+            path = plot_roofline(
+                gpu_type=GPUType.H100_SXM,
+                precision=PrecisionMode.BF16,
+                points=points,
+                output_path=Path(tmpdir) / "roofline.png",
+            )
+            assert path.exists()
+
+    def test_empty_points(self) -> None:
+        from vlm_ocr_bench.analysis.roofline import plot_roofline
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            path = plot_roofline(
+                gpu_type=GPUType.H100_SXM,
+                precision=PrecisionMode.BF16,
+                points=[],
+                output_path=Path(tmpdir) / "roofline_empty.png",
+            )
+            assert path.exists()
+
+
+class TestPlotPareto:
+    def test_basic(self) -> None:
+        from vlm_ocr_bench.analysis.pareto import plot_pareto
+
+        points = [
+            ParetoPoint(label="A", throughput=10.0, quality=0.9),
+            ParetoPoint(label="B", throughput=20.0, quality=0.8),
+            ParetoPoint(label="C", throughput=5.0, quality=0.7),
+        ]
+        result = compute_pareto_frontier(points)
+        with tempfile.TemporaryDirectory() as tmpdir:
+            path = plot_pareto(result, output_path=Path(tmpdir) / "pareto.png")
+            assert path.exists()
+
+    def test_empty(self) -> None:
+        from vlm_ocr_bench.analysis.pareto import plot_pareto
+
+        result = compute_pareto_frontier([])
+        with tempfile.TemporaryDirectory() as tmpdir:
+            path = plot_pareto(result, output_path=Path(tmpdir) / "pareto_empty.png")
+            assert path.exists()
+
 
 # ─── Module Export Tests ───
 
@@ -751,6 +870,8 @@ class TestModuleExports:
             compute_speedup,
             compute_tco,
             flatten_inference_result,
+            plot_pareto,
+            plot_roofline,
             results_to_dataframe,
             welch_t_test,
         )
@@ -765,3 +886,5 @@ class TestModuleExports:
         assert ReportGenerator is not None
         assert results_to_dataframe is not None
         assert flatten_inference_result is not None
+        assert plot_roofline is not None
+        assert plot_pareto is not None

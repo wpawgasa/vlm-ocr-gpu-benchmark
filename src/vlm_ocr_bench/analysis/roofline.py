@@ -66,7 +66,8 @@ def compute_roofline(
     if measured_bandwidth_tb_s > 0:
         arithmetic_intensity = measured_tflops / measured_bandwidth_tb_s
     else:
-        arithmetic_intensity = ridge_point  # assume compute-bound if no BW data
+        # No bandwidth data — place well above ridge point to classify as compute-bound
+        arithmetic_intensity = ridge_point * 2.0
 
     # Determine bottleneck
     if arithmetic_intensity < ridge_point * 0.9:

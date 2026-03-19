@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Any, TypeAlias
+from typing import Any, Literal, TypeAlias
 
 import numpy as np
 from scipy import stats
@@ -98,7 +98,7 @@ def welch_t_test(
 
 def bootstrap_ci(
     data: list[float],
-    statistic: str = "mean",
+    statistic: Literal["mean", "median"] = "mean",
     n_bootstrap: int = 10000,
     ci: float = 0.95,
     seed: int = 42,
@@ -114,19 +114,26 @@ def bootstrap_ci(
 
     Returns:
         (lower_bound, upper_bound) of the confidence interval.
+
+    Raises:
+        ValueError: if statistic is not "mean" or "median".
     """
+    if statistic not in ("mean", "median"):
+        raise ValueError(f"statistic must be 'mean' or 'median', got {statistic!r}")
+
     arr = np.array(data, dtype=np.float64)
     if len(arr) < 2:
         val = float(arr[0]) if len(arr) == 1 else 0.0
         return (val, val)
 
     rng = np.random.default_rng(seed)
-    stat_fn = np.mean if statistic == "mean" else np.median
 
-    boot_stats = np.empty(n_bootstrap)
-    for i in range(n_bootstrap):
-        sample = rng.choice(arr, size=len(arr), replace=True)
-        boot_stats[i] = stat_fn(sample)
+    # Vectorised bootstrap: draw all samples at once for efficiency
+    samples = rng.choice(arr, size=(n_bootstrap, len(arr)), replace=True)
+    if statistic == "mean":
+        boot_stats = np.mean(samples, axis=1)
+    else:
+        boot_stats = np.median(samples, axis=1)
 
     alpha = (1.0 - ci) / 2.0
     lower = float(np.percentile(boot_stats, 100 * alpha))
@@ -137,6 +144,7 @@ def bootstrap_ci(
 def compute_speedup(
     baseline_values: list[float],
     comparison_values: list[float],
+    seed: int = 42,
 ) -> SpeedupResult:
     """Compute speedup of comparison over baseline with statistical significance.
 
@@ -146,6 +154,7 @@ def compute_speedup(
     Args:
         baseline_values: measurements from baseline (e.g., H100)
         comparison_values: measurements from comparison (e.g., B300)
+        seed: random seed for bootstrap reproducibility
 
     Returns:
         SpeedupResult with mean speedup, 95% CI, p-value, effect size.
@@ -161,16 +170,15 @@ def compute_speedup(
 
     mean_speedup = comp_mean / base_mean
 
-    # Bootstrap CI for the speedup ratio
+    # Bootstrap CI for the speedup ratio (vectorised)
     if len(base) >= 2 and len(comp) >= 2:
-        rng = np.random.default_rng(42)
+        rng = np.random.default_rng(seed)
         n_boot = 10000
-        boot_speedups = np.empty(n_boot)
-        for i in range(n_boot):
-            b_sample = rng.choice(base, size=len(base), replace=True)
-            c_sample = rng.choice(comp, size=len(comp), replace=True)
-            b_mean = np.mean(b_sample)
-            boot_speedups[i] = np.mean(c_sample) / b_mean if b_mean > 0 else 0.0
+        b_samples = rng.choice(base, size=(n_boot, len(base)), replace=True)
+        c_samples = rng.choice(comp, size=(n_boot, len(comp)), replace=True)
+        b_means = np.mean(b_samples, axis=1)
+        c_means = np.mean(c_samples, axis=1)
+        boot_speedups = np.where(b_means > 0, c_means / b_means, 0.0)
         ci_low = float(np.percentile(boot_speedups, 2.5))
         ci_high = float(np.percentile(boot_speedups, 97.5))
     else:

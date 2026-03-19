@@ -12,6 +12,7 @@ from vlm_ocr_bench.analysis.pareto import (
     ParetoPoint,
     ParetoResult,
     compute_pareto_frontier,
+    plot_pareto,
 )
 from vlm_ocr_bench.analysis.report import (
     ReportData,
@@ -21,6 +22,7 @@ from vlm_ocr_bench.analysis.report import (
 from vlm_ocr_bench.analysis.roofline import (
     RooflinePoint,
     compute_roofline,
+    plot_roofline,
 )
 from vlm_ocr_bench.analysis.statistics import (
     SpeedupResult,
@@ -56,6 +58,8 @@ __all__ = [
     "compute_speedup",
     "compute_tco",
     "flatten_inference_result",
+    "plot_pareto",
+    "plot_roofline",
     "results_to_dataframe",
     "welch_t_test",
 ]

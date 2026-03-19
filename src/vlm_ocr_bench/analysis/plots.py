@@ -26,16 +26,20 @@ def plot_throughput_comparison(
     output_path: Path | str,
     metric_label: str = "Pages/s",
     title: str = "Throughput Comparison — H100 vs B300",
+    gpu_a_label: str = "H100 SXM",
+    gpu_b_label: str = "B300 SXM",
 ) -> Path:
     """Generate grouped bar chart comparing throughput across GPUs.
 
     Args:
         models: model names for X-axis
-        h100_values: throughput values for H100
-        b300_values: throughput values for B300
+        h100_values: throughput values for GPU A
+        b300_values: throughput values for GPU B
         output_path: path to save the PNG
         metric_label: Y-axis label
         title: plot title
+        gpu_a_label: label for the first GPU series
+        gpu_b_label: label for the second GPU series
 
     Returns:
         Path to the saved plot.
@@ -46,8 +50,8 @@ def plot_throughput_comparison(
     x = np.arange(len(models))
     width = 0.35
 
-    ax.bar(x - width / 2, h100_values, width, label="H100 SXM", color="#1f77b4")
-    ax.bar(x + width / 2, b300_values, width, label="B300 SXM", color="#ff7f0e")
+    ax.bar(x - width / 2, h100_values, width, label=gpu_a_label, color="#1f77b4")
+    ax.bar(x + width / 2, b300_values, width, label=gpu_b_label, color="#ff7f0e")
 
     ax.set_xlabel("Model")
     ax.set_ylabel(metric_label)
@@ -89,9 +93,14 @@ def plot_latency_cdf(
         ax.plot(sorted_vals, cdf, label=label, linewidth=2)
 
     # Mark p50, p95, p99 guidelines
+    # Use a blended transform: x in axes coordinates (0=left edge), y in data coordinates.
+    # This avoids reading ax.get_xlim() before data limits are established.
+    from matplotlib.transforms import blended_transform_factory
+
+    trans = blended_transform_factory(ax.transAxes, ax.transData)
     for pct, style in [(0.5, ":"), (0.95, "--"), (0.99, "-.")]:
         ax.axhline(y=pct, color="gray", linestyle=style, alpha=0.4)
-        ax.text(ax.get_xlim()[0], pct + 0.01, f"p{int(pct * 100)}", fontsize=8, color="gray")
+        ax.text(0.01, pct + 0.01, f"p{int(pct * 100)}", transform=trans, fontsize=8, color="gray")
 
     ax.set_xlabel(x_label)
     ax.set_ylabel("Cumulative Probability")
