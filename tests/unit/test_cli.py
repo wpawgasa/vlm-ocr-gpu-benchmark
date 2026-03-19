@@ -5,7 +5,6 @@ from __future__ import annotations
 from pathlib import Path
 from unittest.mock import patch
 
-import pytest
 from typer.testing import CliRunner
 
 from vlm_ocr_bench.cli import app
@@ -104,9 +103,7 @@ class TestRunCommand:
             "gpus: [h100_sxm]\n"
             "phases: [inference, training, quality]\n"
         )
-        result = runner.invoke(
-            app, ["run", str(config_file), "--dry-run", "--phase", "inference"]
-        )
+        result = runner.invoke(app, ["run", str(config_file), "--dry-run", "--phase", "inference"])
         assert result.exit_code == 0
         assert "inference" in result.output.lower()
 
@@ -188,7 +185,7 @@ class TestRunPhases:
         config = ExperimentConfig(
             name="test",
             models=["dots_ocr_1.5_3b"],
-            gpus=["h100_sxm"],  # type: ignore[list-item]
+            gpus=["h100_sxm"],
             gpu_configs={},  # no GPU configs
         )
 
