@@ -14,11 +14,11 @@ from vlm_ocr_bench.profiling.monitor import (
     GPUMonitor,
     ProfilingResult,
     ProfilingSummary,
-    _compute_summary,
+    _compute_summary,  # Test internal API directly for thorough coverage
 )
 from vlm_ocr_bench.profiling.nvidia_smi import (
     NvidiaSmiSample,
-    _parse_float,
+    _parse_float,  # Test internal API directly for thorough coverage
 )
 
 # ─── ProfilingSummary Tests ───
@@ -81,7 +81,7 @@ class TestComputeSummary:
                 "gpu_util_pct": 90.0,
                 "mem_util_pct": 50.0,
                 "mem_used_gb": 20.0,
-                "throttle_reasons": 0.0,
+                "throttle_reasons": 0,
             },
             {
                 "timestamp_s": 0.1,
@@ -90,7 +90,7 @@ class TestComputeSummary:
                 "gpu_util_pct": 95.0,
                 "mem_util_pct": 55.0,
                 "mem_used_gb": 22.0,
-                "throttle_reasons": 0.0,
+                "throttle_reasons": 0,
             },
         ]
         summary = _compute_summary(samples, 10.0)
@@ -105,11 +105,11 @@ class TestComputeSummary:
 
     def test_with_throttle(self) -> None:
         samples = [
-            {"timestamp_s": 0.0, "power_w": 500.0, "throttle_reasons": 0.0},
+            {"timestamp_s": 0.0, "power_w": 500.0, "throttle_reasons": 0},
             {
                 "timestamp_s": 0.1,
                 "power_w": 500.0,
-                "throttle_reasons": float(0x20),
+                "throttle_reasons": 0x20,
             },  # SwThermalSlowdown
         ]
         summary = _compute_summary(samples, 1.0)
@@ -124,12 +124,13 @@ class TestComputeSummary:
         summary = _compute_summary(samples, 5.0)
         assert summary.power_mean == 300.0
         assert summary.gpu_temp_mean == 55.0
-        assert summary.sm_occupancy_mean == 0.0
+        assert summary.gpu_active_pct_mean == 0.0
 
     def test_energy_calculation(self) -> None:
+        # Timestamps span 1 hour so trapz gives 100W * 3600s = 360000J = 100Wh
         samples = [
             {"timestamp_s": 0.0, "power_w": 100.0},
-            {"timestamp_s": 1.0, "power_w": 100.0},
+            {"timestamp_s": 3600.0, "power_w": 100.0},
         ]
         summary = _compute_summary(samples, 3600.0)  # 1 hour
         assert summary.total_energy_joules == 100.0 * 3600.0

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import multiprocessing
 import time
+import traceback
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
@@ -29,7 +30,9 @@ class ProfilingSummary:
     total_energy_wh: float = 0.0
 
     # GPU utilization (0-100)
-    sm_occupancy_mean: float = 0.0
+    # Note: sourced from nvmlDeviceGetUtilizationRates().gpu — percentage of time
+    # any CUDA kernel was active, not true SM occupancy (which requires DCGM/Nsight).
+    gpu_active_pct_mean: float = 0.0
     tensor_util_mean: float = 0.0
     memory_util_mean: float = 0.0
     memory_used_peak_gb: float = 0.0
@@ -66,59 +69,89 @@ def _monitor_process(
     """Background monitoring process function.
 
     Runs in a separate process to avoid interfering with benchmarks.
-    Collects GPU metrics via pynvml at the configured interval.
+    Collects GPU metrics via pynvml at the configured interval, with
+    automatic fallback to nvidia-smi polling when pynvml is unavailable.
     """
-    samples: list[dict[str, float]] = []
+    samples: list[dict[str, Any]] = []
     checkpoints: list[dict[str, Any]] = []
     start_time = time.monotonic()
 
-    try:
-        import pynvml
+    # Try pynvml first; fall back to nvidia-smi polling
+    pynvml_available = False
+    handle = None
+    pynvml = None
 
-        pynvml.nvmlInit()
-        handle = pynvml.nvmlDeviceGetHandleByIndex(device_id)
+    try:
+        import pynvml as _pynvml
+
+        _pynvml.nvmlInit()
+        handle = _pynvml.nvmlDeviceGetHandleByIndex(device_id)
+        pynvml = _pynvml
+        pynvml_available = True
     except Exception as exc:
-        result_queue.put({"error": str(exc), "samples": [], "checkpoints": []})
-        return
+        # Log to stderr — structlog may not be configured in the child process
+        print(
+            f"[gpu_monitor] pynvml unavailable, falling back to nvidia-smi: {exc}",
+            flush=True,
+        )
+        from vlm_ocr_bench.profiling.nvidia_smi import is_nvidia_smi_available
+
+        if not is_nvidia_smi_available():
+            result_queue.put({"error": str(exc), "samples": [], "checkpoints": []})
+            return
 
     interval_s = interval_ms / 1000.0
 
     try:
         while not stop_event.is_set():
             ts = time.monotonic() - start_time
-            sample: dict[str, float] = {"timestamp_s": ts}
+            sample: dict[str, Any] = {"timestamp_s": ts}
 
-            try:
-                temp = pynvml.nvmlDeviceGetTemperature(handle, pynvml.NVML_TEMPERATURE_GPU)
-                sample["gpu_temp_c"] = float(temp)
-            except Exception:
-                pass
+            if pynvml_available and pynvml is not None and handle is not None:
+                try:
+                    temp = pynvml.nvmlDeviceGetTemperature(handle, pynvml.NVML_TEMPERATURE_GPU)
+                    sample["gpu_temp_c"] = float(temp)
+                except Exception:
+                    pass
 
-            try:
-                power_mw = pynvml.nvmlDeviceGetPowerUsage(handle)
-                sample["power_w"] = power_mw / 1000.0
-            except Exception:
-                pass
+                try:
+                    power_mw = pynvml.nvmlDeviceGetPowerUsage(handle)
+                    sample["power_w"] = power_mw / 1000.0
+                except Exception:
+                    pass
 
-            try:
-                util = pynvml.nvmlDeviceGetUtilizationRates(handle)
-                sample["gpu_util_pct"] = float(util.gpu)
-                sample["mem_util_pct"] = float(util.memory)
-            except Exception:
-                pass
+                try:
+                    util = pynvml.nvmlDeviceGetUtilizationRates(handle)
+                    sample["gpu_util_pct"] = float(util.gpu)
+                    sample["mem_util_pct"] = float(util.memory)
+                except Exception:
+                    pass
 
-            try:
-                mem = pynvml.nvmlDeviceGetMemoryInfo(handle)
-                sample["mem_used_gb"] = mem.used / (1024**3)
-                sample["mem_total_gb"] = mem.total / (1024**3)
-            except Exception:
-                pass
+                try:
+                    mem = pynvml.nvmlDeviceGetMemoryInfo(handle)
+                    sample["mem_used_gb"] = mem.used / (1024**3)
+                    sample["mem_total_gb"] = mem.total / (1024**3)
+                except Exception:
+                    pass
 
-            try:
-                throttle = pynvml.nvmlDeviceGetCurrentClocksThrottleReasons(handle)
-                sample["throttle_reasons"] = float(throttle)
-            except Exception:
-                pass
+                try:
+                    throttle = pynvml.nvmlDeviceGetCurrentClocksThrottleReasons(handle)
+                    # Store as int to preserve full 64-bit bitmask precision
+                    sample["throttle_reasons"] = int(throttle)
+                except Exception:
+                    pass
+            else:
+                # nvidia-smi fallback
+                from vlm_ocr_bench.profiling.nvidia_smi import query_nvidia_smi
+
+                smi = query_nvidia_smi(device_id)
+                if smi is not None:
+                    sample["gpu_temp_c"] = smi.gpu_temp_c
+                    sample["power_w"] = smi.power_w
+                    sample["gpu_util_pct"] = smi.gpu_util_pct
+                    sample["mem_util_pct"] = smi.mem_util_pct
+                    sample["mem_used_gb"] = smi.mem_used_mb / 1024.0
+                    sample["mem_total_gb"] = smi.mem_total_mb / 1024.0
 
             samples.append(sample)
 
@@ -133,12 +166,14 @@ def _monitor_process(
             time.sleep(interval_s)
 
     except Exception:
-        pass
+        # Log to stderr — structlog may not be configured in the child process
+        traceback.print_exc()
     finally:
         import contextlib
 
-        with contextlib.suppress(Exception):
-            pynvml.nvmlShutdown()
+        if pynvml_available and pynvml is not None:
+            with contextlib.suppress(Exception):
+                pynvml.nvmlShutdown()
 
     # Save to parquet if we have data
     data_path = None
@@ -234,6 +269,7 @@ class GPUMonitor:
 
         if self._process.is_alive():
             self._process.terminate()
+            self._process.join(timeout=2.0)  # Reap zombie process
             logger.warning("gpu_monitor_terminated_forcefully")
 
         duration = time.monotonic() - self._start_time
@@ -250,7 +286,7 @@ class GPUMonitor:
         if "error" in raw:
             return ProfilingResult(duration_s=duration, error=raw["error"])
 
-        samples: list[dict[str, float]] = raw.get("samples", [])
+        samples: list[dict[str, Any]] = raw.get("samples", [])
         checkpoints: list[dict[str, Any]] = raw.get("checkpoints", [])
 
         summary = _compute_summary(samples, duration)
@@ -274,7 +310,7 @@ class GPUMonitor:
 
 
 def _compute_summary(
-    samples: list[dict[str, float]],
+    samples: list[dict[str, Any]],
     duration: float,
 ) -> ProfilingSummary:
     """Compute summary statistics from raw profiling samples."""
@@ -282,6 +318,8 @@ def _compute_summary(
         return ProfilingSummary(duration_s=duration)
 
     import numpy as np
+
+    from vlm_ocr_bench.profiling.events import THROTTLE_REASONS
 
     temps = [s["gpu_temp_c"] for s in samples if "gpu_temp_c" in s]
     powers = [s["power_w"] for s in samples if "power_w" in s]
@@ -291,30 +329,26 @@ def _compute_summary(
     throttles = [s["throttle_reasons"] for s in samples if "throttle_reasons" in s]
 
     # Count non-zero throttle events
-    throttle_count = sum(1 for t in throttles if t != 0.0)
+    throttle_count = sum(1 for t in throttles if t != 0)
 
-    # Identify unique throttle reasons
+    # Identify unique throttle reasons using the canonical bitmask mapping from events.py
     throttle_reasons: list[str] = []
-    reason_map = {
-        1: "GpuIdle",
-        2: "ApplicationsClocks",
-        4: "SwPowerCap",
-        8: "HwSlowdown",
-        16: "SyncBoost",
-        32: "SwThermalSlowdown",
-        64: "HwThermalSlowdown",
-        128: "HwPowerBrakeSlowdown",
-    }
     seen: set[str] = set()
     for t in throttles:
         code = int(t)
-        for bit, name in reason_map.items():
+        for bit, name in THROTTLE_REASONS.items():
             if code & bit and name not in seen:
                 throttle_reasons.append(name)
                 seen.add(name)
 
     power_mean = float(np.mean(powers)) if powers else 0.0
-    energy_j = power_mean * duration
+
+    # Use trapezoidal integration over actual timestamps for accurate energy estimation
+    if len(powers) >= 2:
+        timestamps = [s["timestamp_s"] for s in samples if "power_w" in s]
+        energy_j = float(np.trapz(powers, timestamps))
+    else:
+        energy_j = power_mean * duration
     energy_wh = energy_j / 3600.0
 
     return ProfilingSummary(
@@ -325,7 +359,7 @@ def _compute_summary(
         power_min=round(float(np.min(powers)), 1) if powers else 0.0,
         total_energy_joules=round(energy_j, 2),
         total_energy_wh=round(energy_wh, 4),
-        sm_occupancy_mean=float(np.mean(gpu_utils)) if gpu_utils else 0.0,
+        gpu_active_pct_mean=float(np.mean(gpu_utils)) if gpu_utils else 0.0,
         tensor_util_mean=0.0,  # Not available from basic pynvml
         memory_util_mean=float(np.mean(mem_utils)) if mem_utils else 0.0,
         memory_used_peak_gb=round(float(np.max(mem_used)), 2) if mem_used else 0.0,

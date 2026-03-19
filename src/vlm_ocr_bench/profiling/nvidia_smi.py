@@ -90,6 +90,7 @@ def is_nvidia_smi_available() -> bool:
 def _parse_float(value: str) -> float:
     """Parse a float from nvidia-smi output, handling 'N/A' and whitespace."""
     v = value.strip()
+    # .lower() is intentional: nvidia-smi returns mixed-case variants like "Not Supported"
     if not v or v.lower() in ("n/a", "[n/a]", "not supported"):
         return 0.0
     try:
