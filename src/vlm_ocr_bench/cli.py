@@ -4,12 +4,15 @@ from __future__ import annotations
 
 import time
 from pathlib import Path
-from typing import Annotated
+from typing import TYPE_CHECKING, Annotated
 
 import structlog
 import typer
 from rich.console import Console
 from rich.table import Table
+
+if TYPE_CHECKING:
+    from vlm_ocr_bench.config.schema import ExperimentConfig, GPUConfig, ModelConfig
 
 app = typer.Typer(
     name="vlm-ocr-bench",
@@ -103,6 +106,7 @@ def validate(
         console.print(f"  Seed: {exp_config.seed}")
         console.print(f"  Output: {exp_config.output_dir}")
     except Exception as exc:
+        logger.debug("config_validation_failed", exc_info=True)
         console.print(f"[red]Config validation failed:[/red] {exc}")
         raise typer.Exit(code=1) from None
 
@@ -154,6 +158,7 @@ def run(
             cli_overrides=cli_overrides,
         )
     except Exception as exc:
+        logger.debug("config_loading_failed", exc_info=True)
         console.print(f"[red]Config loading failed:[/red] {exc}")
         raise typer.Exit(code=1) from None
 
@@ -193,14 +198,10 @@ def run(
 
 
 def _run_phases(
-    config: object,
+    config: ExperimentConfig,
     phases: list[str],
 ) -> None:
     """Dispatch to phase runners for each model x GPU combination."""
-    from vlm_ocr_bench.config.schema import ExperimentConfig
-
-    assert isinstance(config, ExperimentConfig)
-
     from vlm_ocr_bench.models.registry import get_model_config
 
     for phase_name in phases:
@@ -240,21 +241,11 @@ def _run_phases(
 
 def _run_single_phase(
     phase: str,
-    model_cfg: object,
-    gpu_cfg: object,
-    config: object,
+    model_cfg: ModelConfig,
+    gpu_cfg: GPUConfig,
+    config: ExperimentConfig,
 ) -> None:
     """Run a single phase for one model x GPU combination."""
-    from vlm_ocr_bench.config.schema import (
-        ExperimentConfig,
-        GPUConfig,
-        ModelConfig,
-    )
-
-    assert isinstance(model_cfg, ModelConfig)
-    assert isinstance(gpu_cfg, GPUConfig)
-    assert isinstance(config, ExperimentConfig)
-
     if phase == "inference":
         from vlm_ocr_bench.inference.runner import InferenceBenchmarkRunner
 
@@ -330,7 +321,12 @@ def download(
         typer.Argument(help="What to download: models, data, or all"),
     ] = "all",
 ) -> None:
-    """Pre-download model weights and/or benchmark datasets."""
+    """List model weights and datasets that will be fetched on first use.
+
+    Prints the HuggingFace IDs for all registered models and datasets.
+    Actual downloads happen automatically on first use during benchmarking.
+    To pre-download manually, run: huggingface-cli download <model_id>
+    """
     valid_targets = ("models", "data", "all")
     if target not in valid_targets:
         console.print(f"[red]Invalid target:[/red] {target}")

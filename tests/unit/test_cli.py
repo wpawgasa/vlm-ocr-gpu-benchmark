@@ -2,10 +2,10 @@
 
 from __future__ import annotations
 
-import tempfile
 from pathlib import Path
 from unittest.mock import patch
 
+import pytest
 from typer.testing import CliRunner
 
 from vlm_ocr_bench.cli import app
@@ -44,8 +44,8 @@ class TestListModelsCommand:
     def test_list_models_runs(self) -> None:
         result = runner.invoke(app, ["list-models"])
         assert result.exit_code == 0
-        # Should list at least one model
-        assert "paddleocr" in result.output.lower() or "dots" in result.output.lower()
+        # Assert on stable table headers rather than specific model names
+        assert "HF Model ID" in result.output or "Params (B)" in result.output
 
 
 # ─── validate command ───
@@ -57,20 +57,18 @@ class TestValidateCommand:
         assert result.exit_code == 1
         assert "not found" in result.output.lower()
 
-    def test_validate_valid_config(self) -> None:
-        with tempfile.NamedTemporaryFile(suffix=".yaml", mode="w", delete=False) as f:
-            f.write("name: test\nmodels: [dots_ocr_1.5_3b]\ngpus: [h100_sxm]\n")
-            f.flush()
-            result = runner.invoke(app, ["validate", f.name])
-            assert result.exit_code == 0
-            assert "valid" in result.output.lower()
+    def test_validate_valid_config(self, tmp_path: Path) -> None:
+        config_file = tmp_path / "config.yaml"
+        config_file.write_text("name: test\nmodels: [dots_ocr_1.5_3b]\ngpus: [h100_sxm]\n")
+        result = runner.invoke(app, ["validate", str(config_file)])
+        assert result.exit_code == 0
+        assert "valid" in result.output.lower()
 
-    def test_validate_invalid_config(self) -> None:
-        with tempfile.NamedTemporaryFile(suffix=".yaml", mode="w", delete=False) as f:
-            f.write("not_a_valid_field: true\n")
-            f.flush()
-            result = runner.invoke(app, ["validate", f.name])
-            assert result.exit_code == 1
+    def test_validate_invalid_config(self, tmp_path: Path) -> None:
+        config_file = tmp_path / "config.yaml"
+        config_file.write_text("not_a_valid_field: true\n")
+        result = runner.invoke(app, ["validate", str(config_file)])
+        assert result.exit_code == 1
 
 
 # ─── run command ───
@@ -82,36 +80,48 @@ class TestRunCommand:
         assert result.exit_code == 1
         assert "not found" in result.output.lower()
 
-    def test_run_dry_run(self) -> None:
-        with tempfile.NamedTemporaryFile(suffix=".yaml", mode="w", delete=False) as f:
-            f.write(
-                "name: test_dry\nmodels: [dots_ocr_1.5_3b]\ngpus: [h100_sxm]\nphases: [inference]\n"
-            )
-            f.flush()
-            result = runner.invoke(app, ["run", f.name, "--dry-run"])
-            assert result.exit_code == 0
-            assert "dry run" in result.output.lower()
+    def test_run_dry_run(self, tmp_path: Path) -> None:
+        config_file = tmp_path / "config.yaml"
+        config_file.write_text(
+            "name: test_dry\nmodels: [dots_ocr_1.5_3b]\ngpus: [h100_sxm]\nphases: [inference]\n"
+        )
+        result = runner.invoke(app, ["run", str(config_file), "--dry-run"])
+        assert result.exit_code == 0
+        assert "dry run" in result.output.lower()
 
-    def test_run_invalid_phase(self) -> None:
-        with tempfile.NamedTemporaryFile(suffix=".yaml", mode="w", delete=False) as f:
-            f.write("name: test\nmodels: [dots_ocr_1.5_3b]\ngpus: [h100_sxm]\n")
-            f.flush()
-            result = runner.invoke(app, ["run", f.name, "--phase", "invalid"])
-            assert result.exit_code == 1
-            assert "unknown phase" in result.output.lower()
+    def test_run_invalid_phase(self, tmp_path: Path) -> None:
+        config_file = tmp_path / "config.yaml"
+        config_file.write_text("name: test\nmodels: [dots_ocr_1.5_3b]\ngpus: [h100_sxm]\n")
+        result = runner.invoke(app, ["run", str(config_file), "--phase", "invalid"])
+        assert result.exit_code == 1
+        assert "unknown phase" in result.output.lower()
 
-    def test_run_with_phase_filter(self) -> None:
-        with tempfile.NamedTemporaryFile(suffix=".yaml", mode="w", delete=False) as f:
-            f.write(
-                "name: test\n"
-                "models: [dots_ocr_1.5_3b]\n"
-                "gpus: [h100_sxm]\n"
-                "phases: [inference, training, quality]\n"
-            )
-            f.flush()
-            result = runner.invoke(app, ["run", f.name, "--dry-run", "--phase", "inference"])
-            assert result.exit_code == 0
-            assert "inference" in result.output.lower()
+    def test_run_with_phase_filter(self, tmp_path: Path) -> None:
+        config_file = tmp_path / "config.yaml"
+        config_file.write_text(
+            "name: test\n"
+            "models: [dots_ocr_1.5_3b]\n"
+            "gpus: [h100_sxm]\n"
+            "phases: [inference, training, quality]\n"
+        )
+        result = runner.invoke(
+            app, ["run", str(config_file), "--dry-run", "--phase", "inference"]
+        )
+        assert result.exit_code == 0
+        assert "inference" in result.output.lower()
+
+    def test_run_output_dir(self, tmp_path: Path) -> None:
+        config_file = tmp_path / "config.yaml"
+        config_file.write_text(
+            "name: test\nmodels: [dots_ocr_1.5_3b]\ngpus: [h100_sxm]\nphases: [inference]\n"
+        )
+        custom_output = tmp_path / "custom_output"
+        result = runner.invoke(
+            app,
+            ["run", str(config_file), "--dry-run", "--output-dir", str(custom_output)],
+        )
+        assert result.exit_code == 0
+        assert str(custom_output) in result.output
 
 
 # ─── analyze command ───
@@ -123,13 +133,12 @@ class TestAnalyzeCommand:
         assert result.exit_code == 1
         assert "not found" in result.output.lower()
 
-    def test_analyze_basic(self) -> None:
-        with tempfile.TemporaryDirectory() as tmpdir:
-            result = runner.invoke(app, ["analyze", tmpdir])
-            assert result.exit_code == 0
-            assert "report generated" in result.output.lower()
-            report_path = Path(tmpdir) / "reports" / "report.md"
-            assert report_path.exists()
+    def test_analyze_basic(self, tmp_path: Path) -> None:
+        result = runner.invoke(app, ["analyze", str(tmp_path)])
+        assert result.exit_code == 0
+        assert "report generated" in result.output.lower()
+        report_path = tmp_path / "reports" / "report.md"
+        assert report_path.exists()
 
 
 # ─── download command ───

@@ -36,7 +36,7 @@ fi
 
 # 5. Analyze results
 echo "[5/5] Generating report..."
-RESULTS_DIR="$(grep -oP 'output_dir:\s*\K\S+' "$CONFIG" 2>/dev/null || echo "results")"
+RESULTS_DIR="$(python3 -c "import yaml, sys; cfg=yaml.safe_load(open(sys.argv[1])); print(cfg.get('output_dir', 'results'))" "$CONFIG" 2>/dev/null || echo "results")"
 vlm-ocr-bench analyze "$RESULTS_DIR"
 
 echo "============================================"
