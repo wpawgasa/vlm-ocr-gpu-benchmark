@@ -1,14 +1,19 @@
-"""CDM (formula evaluation) — LaTeX token-level comparison fallback."""
+"""CDM (formula evaluation) — LaTeX token-level comparison fallback.
+
+NOTE: `compute_cdm` is NOT the actual CDM (Character Detection Metric) from
+the OmniDocBench paper. It is a token-level F1 fallback used when no external
+CDM evaluator is available. Results produced by this function are NOT
+comparable to published CDM baselines and should be labeled as
+"token_level_f1" in any reporting context.
+"""
 
 from __future__ import annotations
 
 import re
-import unicodedata
 
+from vlm_ocr_bench.evaluation.metrics._utils import _normalize
 
-def _normalize(text: str) -> str:
-    """Unicode-normalize to NFKC."""
-    return unicodedata.normalize("NFKC", text)
+__all__ = ["compute_cdm"]
 
 
 def _tokenize_latex(latex: str) -> list[str]:
@@ -55,10 +60,12 @@ def compute_cdm(
     prediction: str,
     reference: str,
 ) -> float:
-    """Compute CDM score for LaTeX formula evaluation.
+    """Compute a token-level F1 score for LaTeX formula comparison.
 
-    Uses token-level F1 comparison as a fallback when no external CDM
-    evaluator is available.
+    WARNING: This is a token-level F1 fallback, NOT the actual CDM
+    (Character Detection Metric) from the OmniDocBench paper. Results
+    are not comparable to published CDM baselines. Use an external CDM
+    evaluator for benchmark-comparable scores.
 
     Returns a score in [0.0, 1.0] where 1.0 = perfect match.
     """

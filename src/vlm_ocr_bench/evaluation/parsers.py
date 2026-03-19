@@ -3,9 +3,10 @@
 from __future__ import annotations
 
 import re
-import unicodedata
 from dataclasses import dataclass
 from enum import StrEnum
+
+from vlm_ocr_bench.evaluation.metrics._utils import _normalize
 
 
 class BlockType(StrEnum):
@@ -24,11 +25,6 @@ class Block:
     type: BlockType
     content: str
     level: int = 0  # heading level (1-6), 0 for non-headings
-
-
-def _normalize(text: str) -> str:
-    """Unicode-normalize to NFKC."""
-    return unicodedata.normalize("NFKC", text)
 
 
 def parse_markdown(text: str) -> list[Block]:

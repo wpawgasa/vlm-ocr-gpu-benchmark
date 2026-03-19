@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from typing import Any
 
 import structlog
 
@@ -22,7 +23,7 @@ class OlmOCRBenchResult:
     overall_meteor: float = 0.0
     num_samples: int = 0
     num_failed: int = 0
-    per_sample_scores: list[dict[str, float]] = field(default_factory=list)
+    per_sample_scores: list[dict[str, Any]] = field(default_factory=list)
 
 
 def evaluate_olmocr_bench(
@@ -54,7 +55,7 @@ def evaluate_olmocr_bench(
             result.num_failed += 1
             result.per_sample_scores.append(
                 {
-                    "sample_id_hash": hash(sample_id),
+                    "sample_id": sample_id,
                     "edit_distance": 0.0,
                     "bleu": 0.0,
                     "meteor": 0.0,
@@ -71,7 +72,7 @@ def evaluate_olmocr_bench(
         all_meteor.append(meteor)
 
         result.per_sample_scores.append(
-            {"sample_id_hash": hash(sample_id), "edit_distance": ed, "bleu": bleu, "meteor": meteor}
+            {"sample_id": sample_id, "edit_distance": ed, "bleu": bleu, "meteor": meteor}
         )
 
     result.overall_edit_distance = sum(all_ed) / len(all_ed) if all_ed else 0.0

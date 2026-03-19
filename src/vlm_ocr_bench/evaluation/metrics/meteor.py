@@ -2,34 +2,9 @@
 
 from __future__ import annotations
 
-import unicodedata
+from vlm_ocr_bench.evaluation.metrics._utils import _ensure_nltk_data, _normalize, _tokenize
 
-from vlm_ocr_bench.evaluation.metrics.bleu import _ensure_nltk_data
-
-
-def _normalize(text: str) -> str:
-    """Unicode-normalize to NFKC."""
-    return unicodedata.normalize("NFKC", text)
-
-
-def _tokenize(text: str, language: str) -> list[str]:
-    """Tokenize text based on language (same strategy as BLEU)."""
-    text = _normalize(text)
-    if not text.strip():
-        return []
-
-    if language == "th":
-        from pythainlp.tokenize import word_tokenize as thai_tokenize
-
-        return list(thai_tokenize(text, engine="newmm"))
-
-    if language in ("zh", "cn", "chinese"):
-        return list(text.replace(" ", ""))
-
-    _ensure_nltk_data()
-    from nltk.tokenize import word_tokenize
-
-    return list(word_tokenize(text))
+__all__ = ["compute_meteor"]
 
 
 def compute_meteor(

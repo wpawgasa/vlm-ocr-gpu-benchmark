@@ -254,7 +254,7 @@ class QualityEvalRunner:
                 workload = [
                     {
                         "prompt": prompt,
-                        "multi_modal_data": {"image": images[0]} if images else {},
+                        "multi_modal_data": {"image": images} if images else {},
                     }
                 ]
 

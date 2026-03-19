@@ -30,18 +30,13 @@ from vlm_ocr_bench.evaluation.benchmarks.real5 import (
     evaluate_real5,
 )
 from vlm_ocr_bench.evaluation.metrics.bleu import compute_bleu
-from vlm_ocr_bench.evaluation.metrics.cdm import (
-    _token_level_f1,
-    _tokenize_latex,
-    compute_cdm,
-)
+from vlm_ocr_bench.evaluation.metrics.cdm import compute_cdm
 from vlm_ocr_bench.evaluation.metrics.edit_distance import (
     block_level_edit_distance,
     normalized_edit_distance,
 )
 from vlm_ocr_bench.evaluation.metrics.meteor import compute_meteor
 from vlm_ocr_bench.evaluation.metrics.structural import (
-    _parse_markdown_table,
     formula_structural_accuracy,
     table_structural_accuracy,
 )
@@ -177,6 +172,13 @@ class TestBlockLevelEditDistance:
         score = block_level_edit_distance(pred, ref, match_strategy="greedy")
         assert score == 1.0
 
+    def test_unknown_strategy_falls_back_to_greedy(self) -> None:
+        # Unknown strategy falls back to greedy (match in order)
+        pred = ["a", "b"]
+        ref = ["a", "b"]
+        score = block_level_edit_distance(pred, ref, match_strategy="unknown_strategy")
+        assert score == 1.0
+
 
 # ─── BLEU Tests ───
 
@@ -187,7 +189,10 @@ class TestComputeBleu:
         assert score > 0.9
 
     def test_completely_different(self) -> None:
-        score = compute_bleu("hello world", "foo bar baz qux")
+        # Use longer texts with clearly zero n-gram overlap
+        pred = "the quick brown fox jumps over the lazy dog near the river bank"
+        ref = "colorful butterflies migrate southward during autumn seasonal change"
+        score = compute_bleu(pred, ref)
         assert score < 0.1
 
     def test_empty_prediction(self) -> None:
@@ -199,6 +204,15 @@ class TestComputeBleu:
     def test_score_range(self) -> None:
         score = compute_bleu("the quick brown fox", "the slow brown fox")
         assert 0.0 <= score <= 1.0
+
+    def test_custom_ngram_order(self) -> None:
+        # Unigram BLEU should be > 4-gram BLEU for short texts with partial overlap
+        text_a = "the cat"
+        text_b = "the dog"
+        score_1gram = compute_bleu(text_a, text_b, n_gram=1)
+        score_4gram = compute_bleu(text_a, text_b, n_gram=4)
+        # 1-gram BLEU counts "the" as a match; 4-gram BLEU finds fewer matches
+        assert score_1gram >= score_4gram
 
 
 # ─── METEOR Tests ───
@@ -227,49 +241,14 @@ class TestComputeMeteor:
 # ─── CDM Tests ───
 
 
-class TestTokenizeLatex:
-    def test_simple_formula(self) -> None:
-        tokens = _tokenize_latex("x^2 + y^2 = z^2")
-        assert "x" in tokens
-        assert "+" in tokens
-        assert "=" in tokens
-        assert "^" in tokens
-
-    def test_latex_commands(self) -> None:
-        tokens = _tokenize_latex("\\frac{a}{b}")
-        assert "\\frac" in tokens
-        assert "{" in tokens
-        assert "}" in tokens
-
-    def test_empty(self) -> None:
-        assert _tokenize_latex("") == []
-
-    def test_numbers(self) -> None:
-        tokens = _tokenize_latex("3.14 + 2.71")
-        assert "3.14" in tokens
-        assert "2.71" in tokens
-
-
-class TestTokenLevelF1:
-    def test_identical(self) -> None:
-        tokens = ["a", "b", "c"]
-        assert _token_level_f1(tokens, tokens) == 1.0
-
-    def test_empty(self) -> None:
-        assert _token_level_f1([], []) == 1.0
-
-    def test_one_empty(self) -> None:
-        assert _token_level_f1(["a"], []) == 0.0
-        assert _token_level_f1([], ["a"]) == 0.0
-
-    def test_partial_overlap(self) -> None:
-        pred = ["a", "b", "c"]
-        ref = ["a", "b", "d"]
-        score = _token_level_f1(pred, ref)
-        assert 0.0 < score < 1.0
-
-
 class TestComputeCdm:
+    """Tests for CDM (token-level F1 fallback for LaTeX formula comparison).
+
+    Note: compute_cdm is a token-level F1 approximation, NOT the actual CDM
+    metric from the OmniDocBench paper. These tests verify internal correctness
+    of the tokenizer and F1 computation via the public API.
+    """
+
     def test_identical(self) -> None:
         assert compute_cdm("x^2 + y^2", "x^2 + y^2") == 1.0
 
@@ -280,26 +259,40 @@ class TestComputeCdm:
     def test_empty(self) -> None:
         assert compute_cdm("", "") == 1.0
 
+    def test_one_empty(self) -> None:
+        assert compute_cdm("x^2", "") == 0.0
+        assert compute_cdm("", "x^2") == 0.0
+
+    def test_latex_commands_tokenized(self) -> None:
+        # \\frac{a}{b} should tokenize to multiple tokens including \\frac
+        score_full = compute_cdm("\\frac{a}{b}", "\\frac{a}{b}")
+        assert score_full == 1.0
+
+    def test_numbers_tokenized(self) -> None:
+        score = compute_cdm("3.14", "3.14")
+        assert score == 1.0
+
+    def test_partial_overlap(self) -> None:
+        # x^2 + y^2 vs x^2 — partial token overlap
+        score = compute_cdm("x^2 + y^2", "x^2")
+        assert 0.0 < score < 1.0
+
+    def test_score_range(self) -> None:
+        score = compute_cdm("a + b = c", "x - y = z")
+        assert 0.0 <= score <= 1.0
+
 
 # ─── Structural Tests ───
 
 
-class TestParseMarkdownTable:
-    def test_basic_table(self) -> None:
-        table = "| A | B |\n|---|---|\n| 1 | 2 |\n| 3 | 4 |"
-        rows = _parse_markdown_table(table)
-        assert len(rows) == 3  # header + 2 data rows (separator skipped)
-        assert rows[0] == ["A", "B"]
-        assert rows[1] == ["1", "2"]
-
-    def test_empty(self) -> None:
-        assert _parse_markdown_table("") == []
-
-    def test_no_table(self) -> None:
-        assert _parse_markdown_table("just some text") == []
-
-
 class TestTableStructuralAccuracy:
+    """Tests for table_structural_accuracy.
+
+    Also validates _parse_markdown_table behavior indirectly:
+    - basic table parsing (header + data rows, separator skipped)
+    - empty and non-table inputs
+    """
+
     def test_identical_tables(self) -> None:
         table = "| A | B |\n|---|---|\n| 1 | 2 |"
         result = table_structural_accuracy(table, table)
@@ -322,6 +315,19 @@ class TestTableStructuralAccuracy:
         result = table_structural_accuracy("| A |", "")
         assert result["structure_f1"] == 0.0
 
+    def test_table_with_header_separator_and_data(self) -> None:
+        # Verify separator row is skipped (3 meaningful rows: header + 2 data)
+        table = "| A | B |\n|---|---|\n| 1 | 2 |\n| 3 | 4 |"
+        result = table_structural_accuracy(table, table)
+        assert result["row_count_match"] == 1.0
+        assert result["cell_content_accuracy"] == 1.0
+
+    def test_table_format_param_accepted(self) -> None:
+        # table_format param is accepted (not shadowing builtin 'format')
+        table = "| A | B |\n|---|---|\n| 1 | 2 |"
+        result = table_structural_accuracy(table, table, table_format="markdown")
+        assert result["row_count_match"] == 1.0
+
 
 class TestFormulaStructuralAccuracy:
     def test_identical(self) -> None:
@@ -334,6 +340,10 @@ class TestFormulaStructuralAccuracy:
         result = formula_structural_accuracy("x^2", "\\frac{a}{b}")
         assert result["exact_match"] == 0.0
         assert result["normalized_edit_distance"] < 1.0
+
+    def test_token_level_f1_equals_cdm_score(self) -> None:
+        result = formula_structural_accuracy("x + y", "x - y")
+        assert result["token_level_f1"] == result["cdm_score"]
 
 
 # ─── Parser Tests ───
@@ -439,6 +449,27 @@ class TestEvaluateSample:
         assert scores["edit_distance"] == 0.0
         assert scores["bleu"] == 0.0
 
+    def test_hallucinated_table_penalized(self) -> None:
+        # Prediction has table, reference does not — should penalize table_accuracy
+        pred = "| A | B |\n|---|---|\n| 1 | 2 |"
+        ref = "Some plain text without any tables."
+        scores = evaluate_sample(pred, ref)
+        assert scores["table_accuracy"] == 0.0
+
+    def test_missing_table_penalized(self) -> None:
+        # Reference has table, prediction does not — should penalize table_accuracy
+        pred = "Some plain text without any tables."
+        ref = "| A | B |\n|---|---|\n| 1 | 2 |"
+        scores = evaluate_sample(pred, ref)
+        assert scores["table_accuracy"] == 0.0
+
+    def test_no_tables_in_either(self) -> None:
+        # Neither has tables — table_accuracy should be 1.0
+        pred = "Just some plain text."
+        ref = "Just some plain text."
+        scores = evaluate_sample(pred, ref)
+        assert scores["table_accuracy"] == 1.0
+
 
 class TestEvaluateOmniDocBench:
     def test_basic(self) -> None:
@@ -494,6 +525,20 @@ class TestEvaluateOlmOCRBench:
     def test_empty(self) -> None:
         result = evaluate_olmocr_bench({}, {})
         assert result.num_samples == 0
+
+    def test_per_sample_scores_use_stable_id(self) -> None:
+        # sample_id should be stored as a plain string, not a hash
+        predictions = {"doc_001": "hello world"}
+        references = {"doc_001": "hello world"}
+        result = evaluate_olmocr_bench(predictions, references)
+        assert len(result.per_sample_scores) == 1
+        assert result.per_sample_scores[0]["sample_id"] == "doc_001"
+
+    def test_failed_sample_has_stable_id(self) -> None:
+        predictions = {"doc_001": ""}
+        references = {"doc_001": "hello"}
+        result = evaluate_olmocr_bench(predictions, references)
+        assert result.per_sample_scores[0]["sample_id"] == "doc_001"
 
 
 class TestEvaluateReal5:

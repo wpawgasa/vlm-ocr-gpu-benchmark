@@ -2,57 +2,9 @@
 
 from __future__ import annotations
 
-import unicodedata
+from vlm_ocr_bench.evaluation.metrics._utils import _ensure_nltk_data, _normalize, _tokenize
 
-_NLTK_READY = False
-
-
-def _ensure_nltk_data() -> None:
-    """Download required NLTK data if not already present."""
-    global _NLTK_READY
-    if _NLTK_READY:
-        return
-    import nltk
-
-    for resource in ("punkt_tab", "wordnet"):
-        path = f"tokenizers/{resource}" if "punkt" in resource else f"corpora/{resource}"
-        try:
-            nltk.data.find(path)
-        except LookupError:
-            nltk.download(resource, quiet=True)
-    _NLTK_READY = True
-
-
-def _normalize(text: str) -> str:
-    """Unicode-normalize to NFKC."""
-    return unicodedata.normalize("NFKC", text)
-
-
-def _tokenize(text: str, language: str) -> list[str]:
-    """Tokenize text based on language.
-
-    - Thai: pythainlp word segmentation
-    - Chinese (zh): character-level tokenization
-    - Others: nltk word_tokenize
-    """
-    text = _normalize(text)
-    if not text.strip():
-        return []
-
-    if language == "th":
-        from pythainlp.tokenize import word_tokenize as thai_tokenize
-
-        return list(thai_tokenize(text, engine="newmm"))
-
-    if language in ("zh", "cn", "chinese"):
-        # Character-level tokenization for Chinese
-        return list(text.replace(" ", ""))
-
-    # Default: NLTK word tokenization
-    _ensure_nltk_data()
-    from nltk.tokenize import word_tokenize
-
-    return list(word_tokenize(text))
+__all__ = ["compute_bleu"]
 
 
 def compute_bleu(
@@ -62,6 +14,12 @@ def compute_bleu(
     n_gram: int = 4,
 ) -> float:
     """Compute BLEU score with language-aware tokenization.
+
+    Args:
+        prediction: predicted text
+        reference: reference text
+        language: language code for tokenization
+        n_gram: maximum n-gram order (default 4 for standard BLEU-4)
 
     Returns a score in [0.0, 1.0] where 1.0 = perfect match.
     """
@@ -78,9 +36,6 @@ def compute_bleu(
     pred_str = " ".join(pred_tokens)
     ref_str = " ".join(ref_tokens)
 
-    bleu = sacrebleu.sentence_bleu(
-        pred_str,
-        [ref_str],
-        tokenize="none",  # we already tokenized
-    )
-    return float(bleu.score) / 100.0  # sacrebleu returns 0-100
+    bleu_metric = sacrebleu.BLEU(max_ngram_order=n_gram, tokenize="none")
+    result = bleu_metric.sentence_score(pred_str, [ref_str])
+    return float(result.score) / 100.0  # sacrebleu returns 0-100

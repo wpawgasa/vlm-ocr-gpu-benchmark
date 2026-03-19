@@ -91,8 +91,15 @@ def evaluate_sample(
             ts = table_structural_accuracy(pt, rt)
             table_scores.append(ts["cell_content_accuracy"])
         scores["table_accuracy"] = sum(table_scores) / len(table_scores)
+    elif ref_tables:
+        # Reference has tables but prediction does not — penalize (missed tables)
+        scores["table_accuracy"] = 0.0
+    elif pred_tables:
+        # Prediction has tables but reference does not — penalize (hallucinated tables)
+        scores["table_accuracy"] = 0.0
     else:
-        scores["table_accuracy"] = 0.0 if ref_tables else 1.0
+        # Neither has tables — correct
+        scores["table_accuracy"] = 1.0
 
     # Formula accuracy
     pred_formulas = extract_formulas(prediction)

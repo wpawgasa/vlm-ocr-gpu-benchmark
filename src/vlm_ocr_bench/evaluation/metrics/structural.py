@@ -3,15 +3,12 @@
 from __future__ import annotations
 
 import re
-import unicodedata
 
+from vlm_ocr_bench.evaluation.metrics._utils import _normalize
 from vlm_ocr_bench.evaluation.metrics.cdm import compute_cdm
 from vlm_ocr_bench.evaluation.metrics.edit_distance import normalized_edit_distance
 
-
-def _normalize(text: str) -> str:
-    """Unicode-normalize to NFKC."""
-    return unicodedata.normalize("NFKC", text)
+__all__ = ["formula_structural_accuracy", "table_structural_accuracy"]
 
 
 def _parse_markdown_table(table_text: str) -> list[list[str]]:
@@ -36,9 +33,14 @@ def _parse_markdown_table(table_text: str) -> list[list[str]]:
 def table_structural_accuracy(
     pred_table: str,
     ref_table: str,
-    format: str = "markdown",
+    table_format: str = "markdown",
 ) -> dict[str, float]:
     """Compute structural accuracy metrics for a table.
+
+    Args:
+        pred_table: predicted table text
+        ref_table: reference table text
+        table_format: table format (currently only "markdown" is supported)
 
     Returns dict with:
         row_count_match: 1.0 if row counts match, else 0.0
@@ -110,7 +112,7 @@ def formula_structural_accuracy(
     Returns dict with:
         exact_match: 1.0 if NFKC-normalized strings match exactly
         normalized_edit_distance: similarity score [0, 1]
-        cdm_score: CDM token-level F1
+        cdm_score: token-level F1 (fallback CDM approximation)
         token_level_f1: same as cdm_score (fallback implementation)
     """
     pred_norm = _normalize(pred_latex).strip()

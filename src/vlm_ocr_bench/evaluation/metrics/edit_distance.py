@@ -2,16 +2,13 @@
 
 from __future__ import annotations
 
-import unicodedata
-
 import editdistance
 import numpy as np
 from scipy.optimize import linear_sum_assignment
 
+from vlm_ocr_bench.evaluation.metrics._utils import _normalize
 
-def _normalize(text: str) -> str:
-    """Unicode-normalize to NFKC."""
-    return unicodedata.normalize("NFKC", text)
+__all__ = ["block_level_edit_distance", "normalized_edit_distance"]
 
 
 def normalized_edit_distance(prediction: str, reference: str) -> float:
@@ -42,6 +39,7 @@ def block_level_edit_distance(
 
     Aligns predicted blocks to reference blocks via optimal assignment,
     then averages normalized edit distance across matched pairs.
+    Unmatched blocks (count difference) are penalized as zero-similarity.
 
     Returns a score in [0.0, 1.0] where 1.0 = perfect match.
     """
@@ -67,12 +65,10 @@ def block_level_edit_distance(
         row_ind = np.arange(n_match)
         col_ind = np.arange(n_match)
 
-    # Average similarity across matched pairs
+    # Average similarity across matched pairs, with unmatched blocks scoring 0
     matched_scores = [1.0 - cost[r, c] for r, c in zip(row_ind, col_ind, strict=True)]
-
-    # Penalize unmatched blocks
     n_unmatched = abs(n_pred - n_ref)
-    total = sum(matched_scores) + 0.0 * n_unmatched
+    # total_count includes unmatched blocks (each contributing 0 to the sum)
     total_count = len(matched_scores) + n_unmatched
 
-    return total / total_count if total_count > 0 else 0.0
+    return sum(matched_scores) / total_count if total_count > 0 else 0.0
