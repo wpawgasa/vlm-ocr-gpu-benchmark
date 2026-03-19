@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from vlm_ocr_bench.evaluation.metrics._utils import _ensure_nltk_data, _normalize, _tokenize
+from vlm_ocr_bench.evaluation.metrics._utils import _ensure_nltk_data, _tokenize
 
 __all__ = ["compute_meteor"]
 
