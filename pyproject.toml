@@ -89,6 +89,7 @@ module = [
     "pythainlp.*",
     "editdistance.*",
     "sacrebleu.*",
+    "scipy.*",
     "pdf2image.*",
     "plotly.*",
     "yaml.*",

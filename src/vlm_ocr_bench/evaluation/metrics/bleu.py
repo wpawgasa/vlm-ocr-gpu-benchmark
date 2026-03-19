@@ -4,6 +4,24 @@ from __future__ import annotations
 
 import unicodedata
 
+_NLTK_READY = False
+
+
+def _ensure_nltk_data() -> None:
+    """Download required NLTK data if not already present."""
+    global _NLTK_READY
+    if _NLTK_READY:
+        return
+    import nltk
+
+    for resource in ("punkt_tab", "wordnet"):
+        path = f"tokenizers/{resource}" if "punkt" in resource else f"corpora/{resource}"
+        try:
+            nltk.data.find(path)
+        except LookupError:
+            nltk.download(resource, quiet=True)
+    _NLTK_READY = True
+
 
 def _normalize(text: str) -> str:
     """Unicode-normalize to NFKC."""
@@ -31,6 +49,7 @@ def _tokenize(text: str, language: str) -> list[str]:
         return list(text.replace(" ", ""))
 
     # Default: NLTK word tokenization
+    _ensure_nltk_data()
     from nltk.tokenize import word_tokenize
 
     return list(word_tokenize(text))
