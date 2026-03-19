@@ -1,0 +1,116 @@
+{
+  "annotations": { "list": [] },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 1,
+  "id": null,
+  "links": [],
+  "panels": [
+    {
+      "title": "GPU Temperature",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
+      "targets": [
+        {
+          "expr": "DCGM_FI_DEV_GPU_TEMP",
+          "legendFormat": "GPU {{gpu}}",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": { "unit": "celsius" }
+      }
+    },
+    {
+      "title": "GPU Power Draw",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
+      "targets": [
+        {
+          "expr": "DCGM_FI_DEV_POWER_USAGE",
+          "legendFormat": "GPU {{gpu}}",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": { "unit": "watt" }
+      }
+    },
+    {
+      "title": "SM Occupancy",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 8 },
+      "targets": [
+        {
+          "expr": "DCGM_FI_PROF_SM_OCCUPANCY * 100",
+          "legendFormat": "GPU {{gpu}}",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": { "unit": "percent", "max": 100 }
+      }
+    },
+    {
+      "title": "Tensor Core Utilization",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 8 },
+      "targets": [
+        {
+          "expr": "DCGM_FI_PROF_PIPE_TENSOR_ACTIVE * 100",
+          "legendFormat": "GPU {{gpu}}",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": { "unit": "percent", "max": 100 }
+      }
+    },
+    {
+      "title": "GPU Memory Usage",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 16 },
+      "targets": [
+        {
+          "expr": "DCGM_FI_DEV_FB_USED / 1024",
+          "legendFormat": "Used GB - GPU {{gpu}}",
+          "refId": "A"
+        },
+        {
+          "expr": "DCGM_FI_DEV_FB_TOTAL / 1024",
+          "legendFormat": "Total GB - GPU {{gpu}}",
+          "refId": "B"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": { "unit": "decgbytes" }
+      }
+    },
+    {
+      "title": "PCIe Throughput",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 16 },
+      "targets": [
+        {
+          "expr": "rate(DCGM_FI_PROF_PCIE_TX_BYTES[1m]) / 1e9",
+          "legendFormat": "TX GB/s - GPU {{gpu}}",
+          "refId": "A"
+        },
+        {
+          "expr": "rate(DCGM_FI_PROF_PCIE_RX_BYTES[1m]) / 1e9",
+          "legendFormat": "RX GB/s - GPU {{gpu}}",
+          "refId": "B"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": { "unit": "Bps" }
+      }
+    }
+  ],
+  "schemaVersion": 39,
+  "tags": ["gpu", "benchmark", "dcgm"],
+  "templating": { "list": [] },
+  "time": { "from": "now-1h", "to": "now" },
+  "title": "GPU Benchmark Dashboard",
+  "uid": "vlm-ocr-bench-gpu"
+}

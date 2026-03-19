@@ -1,0 +1,41 @@
+# Base image for vlm-ocr-bench — GPU-agnostic dependencies
+# GPU-specific layers (FlashAttention, vLLM) are added in Dockerfile.h100/b300
+FROM nvcr.io/nvidia/pytorch:24.10-py3
+
+LABEL maintainer="vlm-ocr-bench"
+LABEL description="Base image for OCR VLM GPU benchmarking"
+
+# System dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    git \
+    curl \
+    wget \
+    jq \
+    htop \
+    && rm -rf /var/lib/apt/lists/*
+
+# DCGM bindings for GPU profiling
+RUN pip install --no-cache-dir nvidia-dcgm-bindings
+
+WORKDIR /workspace/vlm-ocr-bench
+
+# Copy project files
+COPY pyproject.toml ./
+COPY src/ ./src/
+COPY configs/ ./configs/
+COPY scripts/ ./scripts/
+COPY tests/ ./tests/
+COPY CLAUDE.md ./
+
+# Install project dependencies (excluding GPU-specific packages)
+RUN pip install --no-cache-dir -e ".[dev]"
+
+# Download NLTK data
+RUN python -c "import nltk; nltk.download('punkt_tab', quiet=True); nltk.download('wordnet', quiet=True)"
+
+# Set environment
+ENV PYTHONUNBUFFERED=1
+ENV CUDA_DEVICE_ORDER=PCI_BUS_ID
+
+ENTRYPOINT ["vlm-ocr-bench"]
+CMD ["info"]

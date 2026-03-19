@@ -1,0 +1,20 @@
+# H100 (Hopper) optimized image for vlm-ocr-bench
+FROM vlm-ocr-bench:base
+
+LABEL description="H100 SXM optimized build with FlashAttention 3 and vLLM"
+
+# Install FlashAttention 3 (Hopper optimized)
+# Pin exact version for GPU kernel compatibility
+RUN pip install --no-cache-dir --no-build-isolation \
+    flash-attn==2.7.4
+
+# Install vLLM (Hopper optimized build)
+RUN pip install --no-cache-dir \
+    vllm==0.6.6
+
+# Verify installations
+RUN python -c "import flash_attn; print(f'FlashAttention: {flash_attn.__version__}')" && \
+    python -c "import vllm; print(f'vLLM: {vllm.__version__}')" && \
+    python -c "import torch; print(f'CUDA: {torch.version.cuda}'); assert torch.cuda.is_available(), 'CUDA not available'"
+
+ENV GPU_TYPE=h100_sxm

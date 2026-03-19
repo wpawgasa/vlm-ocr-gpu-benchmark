@@ -1,0 +1,25 @@
+# B300 (Blackwell) optimized image for vlm-ocr-bench
+FROM vlm-ocr-bench:base
+
+LABEL description="B300 SXM optimized build with FlashAttention 4 and vLLM"
+
+# Install FlashAttention 4 (Blackwell / CuTe-DSL)
+# Pin exact version for GPU kernel compatibility
+RUN pip install --no-cache-dir --no-build-isolation \
+    flash-attn==3.0.0
+
+# Install vLLM (Blackwell compiled build)
+RUN pip install --no-cache-dir \
+    vllm==0.7.0
+
+# Verify installations and compute capability
+RUN python -c "\
+import flash_attn; print(f'FlashAttention: {flash_attn.__version__}'); \
+import vllm; print(f'vLLM: {vllm.__version__}'); \
+import torch; print(f'CUDA: {torch.version.cuda}'); \
+assert torch.cuda.is_available(), 'CUDA not available'; \
+cc = torch.cuda.get_device_capability(); \
+print(f'Compute Capability: {cc[0]}.{cc[1]}'); \
+assert cc >= (10, 0), f'Blackwell (CC >= 10.0) required, got {cc[0]}.{cc[1]}'"
+
+ENV GPU_TYPE=b300_sxm

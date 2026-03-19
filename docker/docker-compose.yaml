@@ -1,0 +1,58 @@
+version: "3.8"
+
+services:
+  benchmark:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.${GPU_TYPE:-h100}
+    runtime: nvidia
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=${NVIDIA_VISIBLE_DEVICES:-all}
+      - CUDA_DEVICE_ORDER=PCI_BUS_ID
+      - HF_TOKEN=${HF_TOKEN:-}
+      - HF_HOME=/workspace/model-cache
+    volumes:
+      - ../configs:/workspace/vlm-ocr-bench/configs
+      - ../results:/workspace/vlm-ocr-bench/results
+      - model-cache:/workspace/model-cache
+    depends_on:
+      - dcgm-exporter
+    command: ["run", "configs/experiments/full_benchmark.yaml"]
+
+  dcgm-exporter:
+    image: nvcr.io/nvidia/k8s/dcgm-exporter:3.3.8-3.6.0-ubuntu22.04
+    runtime: nvidia
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=${NVIDIA_VISIBLE_DEVICES:-all}
+    ports:
+      - "9400:9400"
+    volumes:
+      - ../monitoring/dcgm/dcgm-exporter-config.csv:/etc/dcgm-exporter/customized.csv
+    command: ["-f", "/etc/dcgm-exporter/customized.csv"]
+
+  prometheus:
+    image: prom/prometheus:v2.53.0
+    ports:
+      - "9090:9090"
+    volumes:
+      - ../monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    depends_on:
+      - dcgm-exporter
+
+  grafana:
+    image: grafana/grafana:11.1.0
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD:-admin}
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Viewer
+    volumes:
+      - ../monitoring/grafana/provisioning:/etc/grafana/provisioning
+      - ../monitoring/grafana/dashboards:/var/lib/grafana/dashboards
+    depends_on:
+      - prometheus
+
+volumes:
+  model-cache:
+    name: vlm-ocr-bench-model-cache
