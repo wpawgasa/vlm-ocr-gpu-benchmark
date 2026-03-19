@@ -388,7 +388,7 @@ class TrainingBenchmarkRunner:
             is_bf16 = precision in (PrecisionMode.BF16, PrecisionMode.FP8)
             dtype = torch.bfloat16 if is_bf16 else torch.float16
 
-            tokenizer = AutoTokenizer.from_pretrained(
+            tokenizer = AutoTokenizer.from_pretrained(  # type: ignore[no-untyped-call]
                 self._model_config.hf_model_id,
                 trust_remote_code=True,
             )
@@ -407,14 +407,14 @@ class TrainingBenchmarkRunner:
 
             peft_kwargs = build_peft_config(self._model_config, self._training_config)
             lora_config = LoraConfig(**peft_kwargs)
-            model = get_peft_model(model, lora_config)
+            model = get_peft_model(model, lora_config)  # type: ignore[assignment]
 
             # Enable gradient checkpointing if configured and model is large enough
             if (
                 self._training_config.gradient_checkpointing
                 and self._model_config.params_billion >= 7.0
             ):
-                model.enable_input_require_grads()
+                model.enable_input_require_grads()  # type: ignore[no-untyped-call]
 
             logger.info(
                 "model_loaded_with_lora",
@@ -525,7 +525,7 @@ class TrainingBenchmarkRunner:
         import torch
         from torch.utils.data import Dataset
 
-        class DummyVLMDataset(Dataset):  # type: ignore[misc]
+        class DummyVLMDataset(Dataset):  # type: ignore[misc,type-arg]
             def __init__(self, size: int, seq_len: int, vocab_size: int) -> None:
                 self._size = size
                 self._seq_len = seq_len
