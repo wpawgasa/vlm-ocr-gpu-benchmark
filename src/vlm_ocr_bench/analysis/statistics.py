@@ -130,10 +130,8 @@ def bootstrap_ci(
 
     # Vectorised bootstrap: draw all samples at once for efficiency
     samples = rng.choice(arr, size=(n_bootstrap, len(arr)), replace=True)
-    if statistic == "mean":
-        boot_stats = np.mean(samples, axis=1)
-    else:
-        boot_stats = np.median(samples, axis=1)
+    stat_fn = np.mean if statistic == "mean" else np.median
+    boot_stats = stat_fn(samples, axis=1)
 
     alpha = (1.0 - ci) / 2.0
     lower = float(np.percentile(boot_stats, 100 * alpha))
