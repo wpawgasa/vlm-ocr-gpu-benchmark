@@ -10,6 +10,13 @@ import structlog
 
 logger = structlog.get_logger()
 
+# Use TrainerCallback as base class when transformers is available so HF Trainer
+# dispatches events correctly. Fall back to object for CPU-only / test environments.
+try:
+    from transformers import TrainerCallback as _TrainerCallback
+except ImportError:
+    _TrainerCallback = object  # type: ignore[assignment,misc]
+
 
 @dataclass
 class StepMetric:
@@ -20,17 +27,19 @@ class StepMetric:
     timestamp: float = 0.0
 
 
-class ThroughputCallback:
+class ThroughputCallback(_TrainerCallback):
     """Track samples/s and tokens/s per training step.
 
-    Integrates with HF Trainer's callback protocol by providing
-    ``on_step_begin`` / ``on_step_end`` / ``on_log`` methods.
+    Subclasses ``transformers.TrainerCallback`` so HF Trainer dispatches
+    ``on_step_begin`` / ``on_step_end`` events correctly.
     """
 
     def __init__(self) -> None:
         self.samples_per_second: list[StepMetric] = []
         self.tokens_per_second: list[StepMetric] = []
         self._step_start_time: float = 0.0
+        # _step_samples / _step_tokens serve as a fallback used in tests
+        # (where args is None). In real runs, batch size is read from args.
         self._step_samples: int = 0
         self._step_tokens: int = 0
 
@@ -51,31 +60,29 @@ class ThroughputCallback:
         control: Any,
         **kwargs: Any,
     ) -> None:
-        """Compute and store throughput for the completed step."""
+        """Compute and store throughput for the completed step.
+
+        Reads ``args.per_device_train_batch_size`` directly so that the
+        measurement is available immediately (``on_log`` fires *after*
+        ``on_step_end`` in HF Trainer's event sequence, making
+        log-derived values unavailable here).
+        """
         elapsed = time.monotonic() - self._step_start_time
-        if elapsed > 0 and self._step_samples > 0:
-            sps = self._step_samples / elapsed
+        # Prefer batch size from args; fall back to _step_samples for testing
+        batch_size = (
+            getattr(args, "per_device_train_batch_size", 0) if args is not None else 0
+        )
+        if batch_size == 0:
+            batch_size = self._step_samples
+
+        if elapsed > 0 and batch_size > 0:
+            sps = batch_size / elapsed
             tps = self._step_tokens / elapsed if self._step_tokens > 0 else 0.0
             step = state.global_step if state else 0
             now = time.monotonic()
 
             self.samples_per_second.append(StepMetric(step=step, value=sps, timestamp=now))
             self.tokens_per_second.append(StepMetric(step=step, value=tps, timestamp=now))
-
-    def on_log(
-        self,
-        args: Any,
-        state: Any,
-        control: Any,
-        logs: dict[str, Any] | None = None,
-        **kwargs: Any,
-    ) -> None:
-        """Extract sample/token counts from trainer logs."""
-        if logs is None:
-            return
-        # HF Trainer provides these in logs when available
-        self._step_samples = int(logs.get("train_samples_per_second", 0) or 0)
-        self._step_tokens = int(logs.get("train_tokens_per_second", 0) or 0)
 
     def get_mean_samples_per_second(self) -> float:
         """Average samples/s across all recorded steps."""
@@ -90,7 +97,7 @@ class ThroughputCallback:
         return sum(m.value for m in self.tokens_per_second) / len(self.tokens_per_second)
 
 
-class MemoryCallback:
+class MemoryCallback(_TrainerCallback):
     """Track peak GPU memory per training step."""
 
     def __init__(self) -> None:
@@ -133,6 +140,12 @@ class MemoryCallback:
         """Get current GPU memory breakdown.
 
         Returns dict with model, optimizer, activation memory estimates in GB.
+
+        Note: ``model_gb`` and ``optimizer_gb`` are always 0.0 — computing
+        them accurately requires hooking into model loading and optimizer state
+        initialization, which is outside the scope of a trainer callback.
+        ``activation_gb`` is estimated as ``reserved - allocated``, which is a
+        rough approximation (reserved memory includes fragmentation).
         """
         if not self._torch_available:
             return {"model_gb": 0.0, "optimizer_gb": 0.0, "activation_gb": 0.0}
@@ -158,7 +171,7 @@ class PowerSample:
     timestamp: float = 0.0
 
 
-class PowerCallback:
+class PowerCallback(_TrainerCallback):
     """Track power draw via hardware/power.py during training.
 
     Uses the existing PowerReader for background sampling, and records
@@ -170,6 +183,7 @@ class PowerCallback:
         self._interval_ms = interval_ms
         self.power_samples: list[PowerSample] = []
         self._reader: Any = None
+        self._power_summary: Any = None
 
     def on_train_begin(
         self,

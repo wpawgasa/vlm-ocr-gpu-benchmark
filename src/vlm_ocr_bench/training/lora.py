@@ -10,11 +10,14 @@ from vlm_ocr_bench.config.schema import ModelConfig, TrainingConfig
 
 logger = structlog.get_logger()
 
-# Model family → target modules mapping
+# Model family → target modules mapping.
+# Families NOT listed here (e.g. "ernie") return an empty list from
+# _get_target_modules, which signals PEFT to auto-detect all Linear layers.
 _MODEL_TARGET_MODULES: dict[str, list[str]] = {
     # Qwen2-VL based models (OlmOCR, Chandra)
     "qwen2_vl": ["q_proj", "k_proj", "v_proj", "o_proj"],
-    # Generic fallback — will be replaced by auto-detection
+    # Default fallback for unrecognised model families — targets common attention projections.
+    # Unlike "ernie", this returns an explicit list rather than triggering auto-detection.
     "default": ["q_proj", "k_proj", "v_proj", "o_proj"],
 }
 

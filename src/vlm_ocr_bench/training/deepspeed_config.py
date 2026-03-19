@@ -62,7 +62,12 @@ def build_deepspeed_config(
         }
         ds_config["bf16"] = {"enabled": False}
     else:
-        # Default to bf16
+        # Unsupported precision (e.g. FP4) — log a warning so the caller knows
+        # that the run will silently use BF16 instead of the requested precision.
+        logger.warning(
+            "unsupported_precision_for_deepspeed_falling_back_to_bf16",
+            precision=precision.value,
+        )
         ds_config["bf16"] = {"enabled": True}
         ds_config["fp16"] = {"enabled": False}
 

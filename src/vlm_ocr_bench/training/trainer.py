@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import gc
+import tempfile
 import time
 from dataclasses import dataclass, field
 from typing import Any
@@ -259,45 +260,55 @@ class TrainingBenchmarkRunner:
 
         total_steps = self._training_config.warmup_steps + self._training_config.measurement_steps
 
-        # Build training arguments
-        training_args = self._build_training_args(
-            micro_batch_size=micro_batch_size,
-            precision=precision,
-            gradient_accumulation_steps=gradient_accumulation_steps,
-            total_steps=total_steps,
-        )
-
         # Build dataset
         train_dataset = self._build_dummy_dataset(
             tokenizer=tokenizer,
             num_samples=total_steps * micro_batch_size,
         )
 
-        # Create trainer
-        trainer = Trainer(
-            model=model,
-            args=training_args,
-            train_dataset=train_dataset,
-            data_collator=self._build_data_collator(tokenizer),
-            callbacks=[throughput_cb, memory_cb, power_cb],
-        )
+        # Use a temporary directory for trainer outputs to avoid collisions between
+        # concurrent benchmark runs; save_strategy="no" so no checkpoints are written.
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            # Build training arguments
+            training_args = self._build_training_args(
+                micro_batch_size=micro_batch_size,
+                precision=precision,
+                gradient_accumulation_steps=gradient_accumulation_steps,
+                total_steps=total_steps,
+                output_dir=tmp_dir,
+            )
 
-        # Train
-        wall_start = time.monotonic()
-        train_result = trainer.train()
-        wall_time_s = time.monotonic() - wall_start
+            # Create trainer
+            trainer = Trainer(
+                model=model,
+                args=training_args,
+                train_dataset=train_dataset,
+                data_collator=self._build_data_collator(tokenizer),
+                callbacks=[throughput_cb, memory_cb, power_cb],
+            )
 
-        # Collect metrics
-        steps_completed = (
-            train_result.global_step if hasattr(train_result, "global_step") else total_steps
-        )
-        loss_values = [
-            log.get("loss", 0.0) for log in (trainer.state.log_history or []) if "loss" in log
-        ]
+            # Train
+            wall_start = time.monotonic()
+            train_result = trainer.train()
+            wall_time_s = time.monotonic() - wall_start
+
+            # Collect metrics
+            steps_completed = (
+                train_result.global_step if hasattr(train_result, "global_step") else total_steps
+            )
+            loss_values = [
+                log.get("loss", 0.0)
+                for log in (trainer.state.log_history or [])
+                if "loss" in log
+            ]
+
+        # Estimate token count: steps × batch_size × sequence_length (dummy seq = 512)
+        seq_len = 512
+        num_tokens = steps_completed * micro_batch_size * seq_len
 
         metrics = compute_training_metrics(
             num_samples=steps_completed * micro_batch_size,
-            num_tokens=0,  # Will be populated if tokenizer tracking is available
+            num_tokens=num_tokens,
             wall_time_s=wall_time_s,
             peak_gpu_memory_gb=memory_cb.get_peak_memory_gb(),
             mean_power_watts=power_cb.get_mean_power_watts(),
@@ -322,12 +333,13 @@ class TrainingBenchmarkRunner:
         precision: PrecisionMode,
         gradient_accumulation_steps: int,
         total_steps: int,
+        output_dir: str,
     ) -> Any:
         """Build HF TrainingArguments for a benchmark run."""
         from transformers import TrainingArguments
 
         args_kwargs: dict[str, Any] = {
-            "output_dir": "/tmp/vlm_ocr_bench_training",
+            "output_dir": output_dir,
             "per_device_train_batch_size": micro_batch_size,
             "gradient_accumulation_steps": gradient_accumulation_steps,
             "learning_rate": self._training_config.learning_rate,
@@ -376,7 +388,7 @@ class TrainingBenchmarkRunner:
         """
         try:
             import torch
-            from transformers import AutoModelForCausalLM, AutoTokenizer
+            from transformers import AutoModelForVision2Seq, AutoProcessor
 
             logger.info(
                 "loading_model",
@@ -388,14 +400,17 @@ class TrainingBenchmarkRunner:
             is_bf16 = precision in (PrecisionMode.BF16, PrecisionMode.FP8)
             dtype = torch.bfloat16 if is_bf16 else torch.float16
 
-            tokenizer = AutoTokenizer.from_pretrained(  # type: ignore[no-untyped-call]
+            # Use AutoProcessor to include image processors for VLMs
+            tokenizer = AutoProcessor.from_pretrained(  # type: ignore[no-untyped-call]
                 self._model_config.hf_model_id,
                 trust_remote_code=True,
             )
-            if tokenizer.pad_token is None:
-                tokenizer.pad_token = tokenizer.eos_token
+            # Set pad_token on the embedded tokenizer if missing
+            _inner = getattr(tokenizer, "tokenizer", tokenizer)
+            if getattr(_inner, "pad_token", None) is None:
+                _inner.pad_token = getattr(_inner, "eos_token", None)
 
-            model = AutoModelForCausalLM.from_pretrained(
+            model = AutoModelForVision2Seq.from_pretrained(
                 self._model_config.hf_model_id,
                 torch_dtype=dtype,
                 trust_remote_code=True,
@@ -484,15 +499,16 @@ class TrainingBenchmarkRunner:
             model.train()
             is_bf16 = precision in (PrecisionMode.BF16, PrecisionMode.FP8)
             amp_dtype = torch.bfloat16 if is_bf16 else torch.float16
-            with torch.cuda.amp.autocast(dtype=amp_dtype):
+            with torch.amp.autocast(device_type="cuda", dtype=amp_dtype):
                 outputs = model(**dummy)
                 loss = outputs.loss
                 if loss is not None:
                     loss.backward()
 
-            # Clean up
+            # Clean up — reset peak memory stats so probe results don't skew measurements
             model.zero_grad(set_to_none=True)
             torch.cuda.empty_cache()
+            torch.cuda.reset_peak_memory_stats()
 
             return True
 
@@ -501,6 +517,7 @@ class TrainingBenchmarkRunner:
                 import torch
 
                 torch.cuda.empty_cache()
+                torch.cuda.reset_peak_memory_stats()
                 return False
             raise
 
@@ -509,7 +526,11 @@ class TrainingBenchmarkRunner:
         import torch
 
         seq_len = 512
-        vocab_size = tokenizer.vocab_size or 32000
+        # AutoProcessor may not have vocab_size directly; fall back to embedded tokenizer
+        vocab_size = getattr(tokenizer, "vocab_size", None)
+        if vocab_size is None:
+            vocab_size = getattr(getattr(tokenizer, "tokenizer", None), "vocab_size", None)
+        vocab_size = vocab_size or 32000
         input_ids = torch.randint(0, vocab_size, (batch_size, seq_len))
         attention_mask = torch.ones_like(input_ids)
         labels = input_ids.clone()
@@ -542,7 +563,11 @@ class TrainingBenchmarkRunner:
                     "labels": input_ids[:],
                 }
 
-        vocab_size = tokenizer.vocab_size or 32000
+        # AutoProcessor may not have vocab_size directly; fall back to embedded tokenizer
+        vocab_size = getattr(tokenizer, "vocab_size", None)
+        if vocab_size is None:
+            vocab_size = getattr(getattr(tokenizer, "tokenizer", None), "vocab_size", None)
+        vocab_size = vocab_size or 32000
         return DummyVLMDataset(size=num_samples, seq_len=512, vocab_size=vocab_size)
 
     def _build_data_collator(self, tokenizer: Any) -> Any:

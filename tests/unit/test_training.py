@@ -394,6 +394,21 @@ class TestBuildDeepspeedConfig:
         )
         assert config["gradient_accumulation_steps"] == 1
 
+    def test_fp4_falls_back_to_bf16(
+        self,
+        training_config_deepspeed: TrainingConfig,
+        b300_gpu_config: GPUConfig,
+    ) -> None:
+        # FP4 is not a supported DeepSpeed precision — should silently use BF16
+        config = build_deepspeed_config(
+            training_config_deepspeed,
+            b300_gpu_config,
+            micro_batch_size=2,
+            precision=PrecisionMode.FP4,
+        )
+        assert config["bf16"]["enabled"] is True
+        assert config["fp16"]["enabled"] is False
+
 
 # ─── Callbacks Tests ───
 
