@@ -297,12 +297,10 @@ class TrainingBenchmarkRunner:
                 train_result.global_step if hasattr(train_result, "global_step") else total_steps
             )
             loss_values = [
-                log.get("loss", 0.0)
-                for log in (trainer.state.log_history or [])
-                if "loss" in log
+                log.get("loss", 0.0) for log in (trainer.state.log_history or []) if "loss" in log
             ]
 
-        # Estimate token count: steps × batch_size × sequence_length (dummy seq = 512)
+        # Estimate token count: steps * batch_size * sequence_length (dummy seq = 512)
         seq_len = 512
         num_tokens = steps_completed * micro_batch_size * seq_len
 
@@ -410,7 +408,7 @@ class TrainingBenchmarkRunner:
             if getattr(_inner, "pad_token", None) is None:
                 _inner.pad_token = getattr(_inner, "eos_token", None)
 
-            model = AutoModelForVision2Seq.from_pretrained(
+            model = AutoModelForVision2Seq.from_pretrained(  # type: ignore[no-untyped-call]
                 self._model_config.hf_model_id,
                 torch_dtype=dtype,
                 trust_remote_code=True,
@@ -499,7 +497,7 @@ class TrainingBenchmarkRunner:
             model.train()
             is_bf16 = precision in (PrecisionMode.BF16, PrecisionMode.FP8)
             amp_dtype = torch.bfloat16 if is_bf16 else torch.float16
-            with torch.amp.autocast(device_type="cuda", dtype=amp_dtype):
+            with torch.amp.autocast(device_type="cuda", dtype=amp_dtype):  # type: ignore[attr-defined]
                 outputs = model(**dummy)
                 loss = outputs.loss
                 if loss is not None:

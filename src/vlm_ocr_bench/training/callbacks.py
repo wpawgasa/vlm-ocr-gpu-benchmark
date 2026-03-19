@@ -15,7 +15,7 @@ logger = structlog.get_logger()
 try:
     from transformers import TrainerCallback as _TrainerCallback
 except ImportError:
-    _TrainerCallback = object  # type: ignore[assignment,misc]
+    _TrainerCallback = object  # type: ignore[assignment,unused-ignore]
 
 
 @dataclass
@@ -27,7 +27,7 @@ class StepMetric:
     timestamp: float = 0.0
 
 
-class ThroughputCallback(_TrainerCallback):
+class ThroughputCallback(_TrainerCallback):  # type: ignore[misc]
     """Track samples/s and tokens/s per training step.
 
     Subclasses ``transformers.TrainerCallback`` so HF Trainer dispatches
@@ -69,9 +69,7 @@ class ThroughputCallback(_TrainerCallback):
         """
         elapsed = time.monotonic() - self._step_start_time
         # Prefer batch size from args; fall back to _step_samples for testing
-        batch_size = (
-            getattr(args, "per_device_train_batch_size", 0) if args is not None else 0
-        )
+        batch_size = getattr(args, "per_device_train_batch_size", 0) if args is not None else 0
         if batch_size == 0:
             batch_size = self._step_samples
 
@@ -97,7 +95,7 @@ class ThroughputCallback(_TrainerCallback):
         return sum(m.value for m in self.tokens_per_second) / len(self.tokens_per_second)
 
 
-class MemoryCallback(_TrainerCallback):
+class MemoryCallback(_TrainerCallback):  # type: ignore[misc]
     """Track peak GPU memory per training step."""
 
     def __init__(self) -> None:
@@ -171,7 +169,7 @@ class PowerSample:
     timestamp: float = 0.0
 
 
-class PowerCallback(_TrainerCallback):
+class PowerCallback(_TrainerCallback):  # type: ignore[misc]
     """Track power draw via hardware/power.py during training.
 
     Uses the existing PowerReader for background sampling, and records
