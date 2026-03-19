@@ -66,7 +66,7 @@ Each module has a dedicated implementation guide with checklist:
 | Inference benchmark (Phase A) | [docs/impl/06-inference.md](docs/impl/06-inference.md) | DONE |
 | Training benchmark (Phase B) | [docs/impl/07-training.md](docs/impl/07-training.md) | DONE |
 | Quality evaluation (Phase C) | [docs/impl/08-evaluation.md](docs/impl/08-evaluation.md) | DONE |
-| Profiling & monitoring | [docs/impl/09-profiling.md](docs/impl/09-profiling.md) | TODO |
+| Profiling & monitoring | [docs/impl/09-profiling.md](docs/impl/09-profiling.md) | DONE |
 | Analysis & reporting | [docs/impl/10-analysis.md](docs/impl/10-analysis.md) | DONE |
 | CLI & orchestration | [docs/impl/11-cli.md](docs/impl/11-cli.md) | DONE |
 | Containerization | [docs/impl/12-containers.md](docs/impl/12-containers.md) | TODO |
