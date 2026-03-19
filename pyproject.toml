@@ -90,6 +90,8 @@ module = [
     "editdistance.*",
     "sacrebleu.*",
     "scipy.*",
+    "pandas.*",
+    "matplotlib.*",
     "pdf2image.*",
     "plotly.*",
     "yaml.*",
