@@ -67,7 +67,7 @@ Each module has a dedicated implementation guide with checklist:
 | Training benchmark (Phase B) | [docs/impl/07-training.md](docs/impl/07-training.md) | DONE |
 | Quality evaluation (Phase C) | [docs/impl/08-evaluation.md](docs/impl/08-evaluation.md) | DONE |
 | Profiling & monitoring | [docs/impl/09-profiling.md](docs/impl/09-profiling.md) | TODO |
-| Analysis & reporting | [docs/impl/10-analysis.md](docs/impl/10-analysis.md) | TODO |
+| Analysis & reporting | [docs/impl/10-analysis.md](docs/impl/10-analysis.md) | DONE |
 | CLI & orchestration | [docs/impl/11-cli.md](docs/impl/11-cli.md) | TODO |
 | Containerization | [docs/impl/12-containers.md](docs/impl/12-containers.md) | TODO |
 | Testing | [docs/impl/13-testing.md](docs/impl/13-testing.md) | TODO |
