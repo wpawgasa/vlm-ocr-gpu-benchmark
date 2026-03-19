@@ -99,6 +99,7 @@ ignore_missing_imports = true
 module = [
     "vlm_ocr_bench.models.loader",
     "vlm_ocr_bench.inference.engine",
+    "vlm_ocr_bench.training.trainer",
 ]
 warn_unused_ignores = false
 
