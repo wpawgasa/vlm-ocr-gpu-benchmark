@@ -90,7 +90,7 @@ def build_workload_batch(
         if "prompt" in prompt_data:
             inp["prompt"] = prompt_data["prompt"]
         elif "messages" in prompt_data:
-            inp["prompt"] = prompt_data["messages"]
+            inp["messages"] = prompt_data["messages"]
 
         batch.append(inp)
 

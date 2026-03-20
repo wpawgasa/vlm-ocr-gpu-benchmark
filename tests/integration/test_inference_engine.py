@@ -23,7 +23,7 @@ pytestmark = [pytest.mark.gpu, pytest.mark.slow]
 def paddle_model_config() -> ModelConfig:
     return ModelConfig(
         name="paddleocr_vl_0.9b",
-        hf_model_id="PaddlePaddle/PaddleOCR-VL-0.9B",
+        hf_model_id="PaddlePaddle/PaddleOCR-VL-1.5",
         params_billion=0.9,
         tier="ultra_compact",
         adapter="PaddleOcrVlAdapter",

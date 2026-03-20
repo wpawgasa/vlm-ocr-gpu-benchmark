@@ -6,7 +6,7 @@ Reproducible benchmarking framework comparing NVIDIA B300 vs H100 GPUs for docum
 
 | Model | Params | Tier | HuggingFace ID |
 |-------|--------|------|----------------|
-| PaddleOCR-VL | 0.9B | Ultra Compact | `PaddlePaddle/PaddleOCR-VL-0.9B` |
+| PaddleOCR-VL | 0.9B | Ultra Compact | `PaddlePaddle/PaddleOCR-VL-1.5` |
 | DOTS OCR 1.5 | 3.0B | Compact | `rednote-hilab/dots.ocr-1.5` |
 | Nanonets OCR2 | 3.0B | Compact | `nanonets/Nanonets-OCR-s` |
 | DeepSeek OCR | 3.0B | Compact | `deepseek-ai/DeepSeek-OCR-3B` |

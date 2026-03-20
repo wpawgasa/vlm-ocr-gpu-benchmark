@@ -141,8 +141,16 @@ class VLLMEngine:
         # are actually passed to the vision encoder (not silently dropped).
         vllm_inputs: list[Any] = []
         for inp in inputs:
-            entry: dict[str, Any] = {"prompt": inp.get("prompt", "")}
             mm_data = inp.get("multi_modal_data")
+            if "messages" in inp:
+                # Apply chat template to convert messages to a prompt string
+                messages = inp["messages"]
+                prompt = self._tokenizer.apply_chat_template(
+                    messages, tokenize=False, add_generation_prompt=True
+                )
+                entry: dict[str, Any] = {"prompt": prompt}
+            else:
+                entry = {"prompt": inp.get("prompt", "")}
             if mm_data is not None:
                 entry["multi_modal_data"] = mm_data
             vllm_inputs.append(entry)

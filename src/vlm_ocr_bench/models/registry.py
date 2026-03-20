@@ -29,7 +29,7 @@ _FA_ALL = [FlashAttnVersion.FA2, FlashAttnVersion.FA3, FlashAttnVersion.FA4]
 MODEL_REGISTRY: dict[str, ModelConfig] = {
     "paddleocr_vl_0.9b": ModelConfig(
         name="paddleocr_vl_0.9b",
-        hf_model_id="PaddlePaddle/PaddleOCR-VL-0.9B",
+        hf_model_id="PaddlePaddle/PaddleOCR-VL-1.5",
         params_billion=0.9,
         tier="ultra_compact",
         adapter="PaddleOcrVlAdapter",

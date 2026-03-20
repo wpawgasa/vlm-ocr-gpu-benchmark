@@ -210,7 +210,7 @@ class TestGetAdapter:
 class TestPaddleOcrVlAdapter:
     def test_model_id(self) -> None:
         adapter = PaddleOcrVlAdapter()
-        assert adapter.get_model_id() == "PaddlePaddle/PaddleOCR-VL-0.9B"
+        assert adapter.get_model_id() == "PaddlePaddle/PaddleOCR-VL-1.5"
 
     def test_build_prompt(self, sample_image: MagicMock) -> None:
         adapter = PaddleOcrVlAdapter()

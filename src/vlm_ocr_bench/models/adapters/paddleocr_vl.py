@@ -13,10 +13,10 @@ if TYPE_CHECKING:
 
 
 class PaddleOcrVlAdapter(OCRModelAdapter):
-    """Adapter for PaddlePaddle/PaddleOCR-VL-0.9B."""
+    """Adapter for PaddlePaddle/PaddleOCR-VL-1.5."""
 
     def get_model_id(self) -> str:
-        return "PaddlePaddle/PaddleOCR-VL-0.9B"
+        return "PaddlePaddle/PaddleOCR-VL-1.5"
 
     def build_prompt(
         self,
