@@ -1,0 +1,25 @@
+# Short GPU benchmark: inference throughput/latency across model sizes
+# Focuses on GPU performance characteristics, not model quality.
+name: gpu_bench_short
+description: "Quick GPU benchmark — 3 model tiers, key batch sizes, inference only"
+
+models:
+  - paddleocr_vl_0.9b   # 0.9B — ultra compact
+  - nanonets_ocr2_3b     # 3B — compact
+  - olmocr2_7b           # 7B — midsize
+
+gpus:
+  - h100_sxm
+
+phases:
+  - inference
+
+inference:
+  batch_sizes: [1, 8, 32]
+  resolutions: [1024]
+  max_output_tokens_sweep: [2048]
+  precision_modes: [bf16]
+  warmup_requests: 10
+  measurement_requests: 50
+  runs_per_config: 1
+  cooldown_seconds: 10
