@@ -111,6 +111,13 @@ class TrainingBenchmarkRunner:
         for precision in self._training_config.precision_modes:
             try:
                 self._run_precision_sweep(precision, result)
+            except TypeError as exc:
+                logger.warning(
+                    "training_skipped_incompatible_model",
+                    precision=precision.value,
+                    model=self._model_config.name,
+                    error=str(exc),
+                )
             except Exception:
                 logger.error(
                     "precision_sweep_failed",
@@ -533,6 +540,15 @@ class TrainingBenchmarkRunner:
                 torch.cuda.empty_cache()
                 torch.cuda.reset_peak_memory_stats()
                 return False
+            raise
+        except TypeError as exc:
+            # Model's forward signature is incompatible with standard
+            # Trainer inputs (e.g. PaddleOCR-VL's create_causal_mask).
+            logger.warning(
+                "model_forward_incompatible",
+                model=self._model_config.name,
+                error=str(exc),
+            )
             raise
 
     def _build_dummy_batch(self, tokenizer: Any, batch_size: int) -> dict[str, Any]:

@@ -209,7 +209,28 @@ class VLLMEngine:
         return results
 
     def get_memory_stats(self) -> MemoryStats:
-        """Get current GPU memory statistics."""
+        """Get current GPU memory statistics.
+
+        Uses pynvml to query device-level memory, which works even when
+        vLLM runs the engine in a separate subprocess.
+        """
+        try:
+            import pynvml
+
+            pynvml.nvmlInit()
+            handle = pynvml.nvmlDeviceGetHandleByIndex(0)
+            info = pynvml.nvmlDeviceGetMemoryInfo(handle)
+            used_gb = info.used / (1024**3)
+            total_gb = info.total / (1024**3)
+            pynvml.nvmlShutdown()
+            return MemoryStats(
+                allocated_gb=used_gb,
+                reserved_gb=total_gb,
+                peak_allocated_gb=used_gb,  # nvml doesn't track peak; use current
+            )
+        except Exception:
+            logger.debug("memory_stats_unavailable_nvml")
+        # Fallback to torch (works when engine is in-process)
         try:
             import torch
 
@@ -223,7 +244,7 @@ class VLLMEngine:
                     peak_allocated_gb=peak,
                 )
         except Exception:
-            logger.debug("memory_stats_unavailable")
+            logger.debug("memory_stats_unavailable_torch")
         return MemoryStats()
 
     def shutdown(self) -> None:
