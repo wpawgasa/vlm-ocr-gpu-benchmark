@@ -438,6 +438,11 @@ class TrainingBenchmarkRunner:
                     device_map="auto",
                 )
 
+            # Monkey-patch create_causal_mask for models whose remote code
+            # passes `inputs_embeds` (with 's') instead of the `input_embeds`
+            # parameter name expected by newer transformers versions.
+            self._patch_causal_mask_compat(model)
+
             # Apply LoRA
             from peft import LoraConfig, get_peft_model
 
@@ -462,6 +467,47 @@ class TrainingBenchmarkRunner:
         except Exception:
             logger.error("model_load_with_lora_failed", exc_info=True)
             return None, None
+
+    @staticmethod
+    def _patch_causal_mask_compat(model: Any) -> None:
+        """Patch create_causal_mask for models with mismatched kwarg names.
+
+        Some remote model code (e.g. PaddleOCR-VL) calls
+        ``create_causal_mask(inputs_embeds=...)`` but newer transformers
+        expects ``input_embeds`` (no trailing 's').  This replaces the
+        function in the module's global namespace with a wrapper that
+        maps the old name to the new one.
+        """
+        import inspect
+        import sys
+
+        model_cls = type(model)
+        # Unwrap PEFT wrapper if present
+        base = getattr(model, "base_model", model)
+        base = getattr(base, "model", base)
+        model_module_name = type(base).__module__
+
+        if model_module_name not in sys.modules:
+            return
+
+        model_module = sys.modules[model_module_name]
+        original_fn = getattr(model_module, "create_causal_mask", None)
+        if original_fn is None:
+            return
+
+        sig = inspect.signature(original_fn)
+        if "inputs_embeds" in sig.parameters:
+            # Already has the old-style parameter, no patch needed
+            return
+
+        def _patched_create_causal_mask(*args: Any, **kwargs: Any) -> Any:
+            # Map inputs_embeds -> input_embeds
+            if "inputs_embeds" in kwargs and "input_embeds" not in kwargs:
+                kwargs["input_embeds"] = kwargs.pop("inputs_embeds")
+            return original_fn(*args, **kwargs)
+
+        model_module.create_causal_mask = _patched_create_causal_mask  # type: ignore[attr-defined]
+        logger.info("patched_create_causal_mask", model=model_cls.__name__)
 
     def _find_max_batch_size(
         self,
