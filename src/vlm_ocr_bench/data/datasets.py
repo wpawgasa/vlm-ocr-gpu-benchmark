@@ -57,7 +57,7 @@ DATASET_REGISTRY: dict[str, DatasetSpec] = {
         name="omnidocbench_v1.5",
         hf_id="opendatalab/OmniDocBench",
         version="v1.5",
-        split="test",
+        split="train",
         num_samples=1355,
         doc_types=[
             "academic",

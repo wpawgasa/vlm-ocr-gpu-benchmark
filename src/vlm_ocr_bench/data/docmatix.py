@@ -32,6 +32,7 @@ class DocmatixLoader(DatasetLoader):
             split=self.spec.split or "train",
             trust_remote_code=True,
             streaming=True,
+            token=True,
         )
 
         # Sequential sampling up to target_size

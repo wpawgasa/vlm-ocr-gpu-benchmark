@@ -36,6 +36,7 @@ class Real5OmniDocLoader(DatasetLoader):
             self.spec.hf_id,
             split=self.spec.split or "test",
             trust_remote_code=True,
+            token=True,
         )
 
         samples: list[DocSample] = []

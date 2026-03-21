@@ -73,47 +73,70 @@ class OmniDocBenchLoader(DatasetLoader):
         super().__init__(spec)
         self._gt_map: dict[str, GroundTruth] = {}
 
-    def load(self) -> list[DocSample]:
-        """Download from HuggingFace and parse annotation JSON."""
+    def load(self, max_samples: int | None = None) -> list[DocSample]:
+        """Download from HuggingFace and parse annotation JSON.
+
+        Uses streaming to avoid downloading the entire dataset when
+        only a subset of samples is needed.
+        """
         from datasets import load_dataset
 
-        logger.info("loading_dataset", name=self.spec.name, hf_id=self.spec.hf_id)
+        effective_max = max_samples or self.spec.num_samples or 0
+
+        logger.info(
+            "loading_dataset",
+            name=self.spec.name,
+            hf_id=self.spec.hf_id,
+            max_samples=effective_max,
+        )
 
         ds = load_dataset(
             self.spec.hf_id,
-            split=self.spec.split or "test",
+            split=self.spec.split or "train",
             trust_remote_code=True,
+            token=True,
+            streaming=True,
         )
 
         samples: list[DocSample] = []
+        image_dir = Path("/tmp/omnidocbench")
+        image_dir.mkdir(parents=True, exist_ok=True)
+
         for idx, row in enumerate(ds):
-            sample_id = str(row.get("id", f"omnidoc_{idx}"))
-            image = row.get("image")
+            if effective_max and idx >= effective_max:
+                break
+            # Handle both dict-like rows and image-only datasets
+            if isinstance(row, dict):
+                sample_id = str(row.get("id", f"omnidoc_{idx}"))
+                image = row.get("image")
+                doc_type = str(row.get("doc_type", "unknown"))
+                attrs = {k: v for k, v in row.items() if k != "image"}
+            else:
+                sample_id = f"omnidoc_{idx}"
+                image = row
+                doc_type = "unknown"
+                attrs = {}
 
             # Save image to temp path for lazy loading
-            image_path = Path(f"/tmp/omnidocbench/{sample_id}.png")
-            image_path.parent.mkdir(parents=True, exist_ok=True)
-            if image is not None:
+            image_path = image_dir / f"{sample_id}.png"
+            if image is not None and not image_path.exists():
                 image.save(str(image_path))
-
-            doc_type = str(row.get("doc_type", "unknown"))
-            attrs = dict(row) if isinstance(row, dict) else {}
 
             sample = DocSample(
                 sample_id=sample_id,
                 image_path=image_path,
                 doc_type=doc_type,
-                language=str(row.get("language", "en")),
-                layout_type=str(row.get("layout_type", "single_column")),
-                has_tables=bool(row.get("has_tables", False)),
-                has_formulas=bool(row.get("has_formulas", False)),
-                has_figures=bool(row.get("has_figures", False)),
+                language=str(attrs.get("language", "en")),
+                layout_type=str(attrs.get("layout_type", "single_column")),
+                has_tables=bool(attrs.get("has_tables", False)),
+                has_formulas=bool(attrs.get("has_formulas", False)),
+                has_figures=bool(attrs.get("has_figures", False)),
                 attributes=attrs,
             )
             samples.append(sample)
 
             # Store ground truth if available
-            md_text = row.get("markdown", row.get("ground_truth", ""))
+            md_text = attrs.get("markdown", attrs.get("ground_truth", ""))
             if md_text:
                 self._gt_map[sample_id] = GroundTruth(
                     markdown=_normalize_text(str(md_text)),
@@ -130,7 +153,7 @@ class OmniDocBenchLoader(DatasetLoader):
     ) -> list[DocSample]:
         """Filter samples by document type."""
         if self._samples is None:
-            self.load()
+            self.load(max_samples=max_samples)
         assert self._samples is not None
 
         result = self._samples

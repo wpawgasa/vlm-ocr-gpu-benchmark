@@ -37,6 +37,7 @@ class OlmOCRBenchLoader(DatasetLoader):
             "allenai/olmOCR-bench",
             split="test",
             trust_remote_code=True,
+            token=True,
         )
 
         samples: list[DocSample] = []
