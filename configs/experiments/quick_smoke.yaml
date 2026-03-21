@@ -6,7 +6,7 @@ models:
   - paddleocr_vl_0.9b
 
 gpus:
-  - h100_sxm
+  - b300_sxm
 
 phases:
   - inference

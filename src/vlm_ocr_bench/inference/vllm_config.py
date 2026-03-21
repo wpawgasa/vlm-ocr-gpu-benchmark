@@ -45,12 +45,10 @@ def build_vllm_engine_args(
     }
 
     # GPU-specific attention backend.
-    # B300 (Blackwell) uses FlashMLA; H100 uses standard FlashAttention.
-    # vLLM selects these via `attention_backend`, not the invalid `enable_flashattn`.
-    if gpu_config.gpu_type == GPUType.B300_SXM:
-        args["attention_backend"] = "FLASHMLA"
-    elif gpu_config.gpu_type == GPUType.H100_SXM:
-        args["attention_backend"] = "FLASH_ATTN"
+    # FlashMLA is only valid for models using Multi-head Latent Attention (e.g.
+    # DeepSeek).  None of the OCR VLMs in this benchmark use MLA, so we always
+    # select FLASH_ATTN which works on both Hopper (FA3) and Blackwell (FA4).
+    args["attention_backend"] = "FLASH_ATTN"
 
     # Precision-specific config
     _apply_precision_config(args, precision, gpu_config)
