@@ -40,6 +40,8 @@ def build_vllm_engine_args(
         "gpu_memory_utilization": 0.90,
         "max_model_len": max_model_len,
         "enforce_eager": False,
+        # Enable stats so RequestStateStats (TTFT, per-request latency) is populated.
+        "disable_log_stats": False,
     }
 
     # GPU-specific attention backend.
