@@ -246,11 +246,14 @@ def _run_single_phase(
     config: ExperimentConfig,
 ) -> None:
     """Run a single phase for one model x GPU combination."""
+    from vlm_ocr_bench.utils.storage import save_phase_results
+
     if phase == "inference":
         from vlm_ocr_bench.inference.runner import InferenceBenchmarkRunner
 
         inf_runner = InferenceBenchmarkRunner(model_cfg, gpu_cfg, config.inference)
         inf_result = inf_runner.run()
+        save_phase_results(phase, inf_result, config.output_dir)
         console.print(
             f"    Inference: {len(inf_result.configs)} configs, {inf_result.total_wall_time_s:.1f}s"
         )
@@ -260,6 +263,7 @@ def _run_single_phase(
 
         train_runner = TrainingBenchmarkRunner(model_cfg, gpu_cfg, config.training)
         train_result = train_runner.run()
+        save_phase_results(phase, train_result, config.output_dir)
         console.print(
             f"    Training: {len(train_result.configs)} configs, "
             f"{train_result.total_wall_time_s:.1f}s"
@@ -270,6 +274,7 @@ def _run_single_phase(
 
         qual_runner = QualityEvalRunner(model_cfg, gpu_cfg, config.quality)
         qual_result = qual_runner.run()
+        save_phase_results(phase, qual_result, config.output_dir)
         console.print(
             f"    Quality: {len(qual_result.benchmarks)} benchmarks, "
             f"{qual_result.total_wall_time_s:.1f}s"
