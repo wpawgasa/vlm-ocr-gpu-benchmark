@@ -9,12 +9,11 @@ models:
   - olmocr2_7b           # 7B — midsize
 
 gpus:
-  - h100_sxm
+  - b300_sxm
 
 phases:
   - inference
   - training
-  - quality
 
 inference:
   batch_sizes: [1, 8, 32]

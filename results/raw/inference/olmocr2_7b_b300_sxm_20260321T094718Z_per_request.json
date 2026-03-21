@@ -1,0 +1,1702 @@
+[
+  {
+    "resolution": 1024,
+    "batch_size": 1,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 0,
+    "latency_ms": 8622.716639769806,
+    "ttft_ms": 7.57598876953125
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 1,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 1,
+    "latency_ms": 8623.442120450363,
+    "ttft_ms": 7.515430450439453
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 1,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 2,
+    "latency_ms": 8622.591478762843,
+    "ttft_ms": 7.419347763061523
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 1,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 3,
+    "latency_ms": 8622.22317007354,
+    "ttft_ms": 7.561922073364258
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 1,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 4,
+    "latency_ms": 8622.075175301688,
+    "ttft_ms": 7.6007843017578125
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 1,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 5,
+    "latency_ms": 8621.724772529888,
+    "ttft_ms": 7.639646530151367
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 1,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 6,
+    "latency_ms": 8622.469585121507,
+    "ttft_ms": 7.547140121459961
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 1,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 7,
+    "latency_ms": 8622.787334772056,
+    "ttft_ms": 7.555484771728516
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 1,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 8,
+    "latency_ms": 8622.139216493906,
+    "ttft_ms": 7.541656494140625
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 1,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 9,
+    "latency_ms": 8622.022352778458,
+    "ttft_ms": 7.4939727783203125
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 1,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 10,
+    "latency_ms": 8622.225366985731,
+    "ttft_ms": 7.509469985961914
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 1,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 11,
+    "latency_ms": 8622.010102005333,
+    "ttft_ms": 7.324934005737305
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 1,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 12,
+    "latency_ms": 8622.172332171886,
+    "ttft_ms": 7.51185417175293
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 1,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 13,
+    "latency_ms": 8621.868289245867,
+    "ttft_ms": 7.46917724609375
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 1,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 14,
+    "latency_ms": 8622.540776945698,
+    "ttft_ms": 7.67064094543457
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 1,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 15,
+    "latency_ms": 8622.518614134606,
+    "ttft_ms": 7.642269134521484
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 1,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 16,
+    "latency_ms": 8622.48902926467,
+    "ttft_ms": 7.5130462646484375
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 1,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 17,
+    "latency_ms": 8622.508816400568,
+    "ttft_ms": 8.194923400878906
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 1,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 18,
+    "latency_ms": 8622.333843287834,
+    "ttft_ms": 7.515907287597656
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 1,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 19,
+    "latency_ms": 8622.01922788654,
+    "ttft_ms": 7.13348388671875
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 1,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 20,
+    "latency_ms": 8622.643333919314,
+    "ttft_ms": 7.480382919311523
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 1,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 21,
+    "latency_ms": 8622.807342162105,
+    "ttft_ms": 7.604122161865234
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 1,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 22,
+    "latency_ms": 8622.463357415654,
+    "ttft_ms": 7.625341415405273
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 1,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 23,
+    "latency_ms": 8622.60568370857,
+    "ttft_ms": 7.495641708374023
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 1,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 24,
+    "latency_ms": 8623.127441042925,
+    "ttft_ms": 7.630825042724609
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 1,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 25,
+    "latency_ms": 8622.94538813876,
+    "ttft_ms": 7.601261138916016
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 1,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 26,
+    "latency_ms": 8622.428590251275,
+    "ttft_ms": 7.417917251586914
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 1,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 27,
+    "latency_ms": 8619.967012097277,
+    "ttft_ms": 7.554531097412109
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 1,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 28,
+    "latency_ms": 8620.976832859924,
+    "ttft_ms": 7.597684860229492
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 1,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 29,
+    "latency_ms": 8620.839462513686,
+    "ttft_ms": 7.575273513793945
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 1,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 30,
+    "latency_ms": 8620.369003910582,
+    "ttft_ms": 7.562398910522461
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 1,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 31,
+    "latency_ms": 8619.971365320453,
+    "ttft_ms": 7.6446533203125
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 1,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 32,
+    "latency_ms": 8620.856535859275,
+    "ttft_ms": 7.607936859130859
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 1,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 33,
+    "latency_ms": 8620.341546567033,
+    "ttft_ms": 7.5092315673828125
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 1,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 34,
+    "latency_ms": 8620.511223657104,
+    "ttft_ms": 7.541179656982422
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 1,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 35,
+    "latency_ms": 8619.526903057704,
+    "ttft_ms": 7.487297058105469
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 1,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 36,
+    "latency_ms": 8620.139547429972,
+    "ttft_ms": 7.27391242980957
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 1,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 37,
+    "latency_ms": 8620.53837500207,
+    "ttft_ms": 8.228302001953125
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 1,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 38,
+    "latency_ms": 8620.81104076924,
+    "ttft_ms": 8.01229476928711
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 1,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 39,
+    "latency_ms": 8620.043655158497,
+    "ttft_ms": 7.853031158447266
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 1,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 40,
+    "latency_ms": 8620.171617133565,
+    "ttft_ms": 7.870674133300781
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 1,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 41,
+    "latency_ms": 8620.468539697413,
+    "ttft_ms": 8.034467697143555
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 1,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 42,
+    "latency_ms": 8623.11270664759,
+    "ttft_ms": 10.667085647583008
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 1,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 43,
+    "latency_ms": 8619.62198316769,
+    "ttft_ms": 7.334709167480469
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 1,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 44,
+    "latency_ms": 8619.772502297565,
+    "ttft_ms": 7.423639297485352
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 1,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 45,
+    "latency_ms": 8619.932868470187,
+    "ttft_ms": 7.549047470092773
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 1,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 46,
+    "latency_ms": 8619.600488731521,
+    "ttft_ms": 7.498502731323242
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 1,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 47,
+    "latency_ms": 8619.919949620908,
+    "ttft_ms": 7.44318962097168
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 1,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 48,
+    "latency_ms": 8620.251822373575,
+    "ttft_ms": 7.3604583740234375
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 1,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 49,
+    "latency_ms": 8619.350014547763,
+    "ttft_ms": 7.475614547729492
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 8,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 0,
+    "latency_ms": 8628.728335783308,
+    "ttft_ms": 11.567115783691406
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 8,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 1,
+    "latency_ms": 76.1551753475942,
+    "ttft_ms": 13.24772834777832
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 8,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 2,
+    "latency_ms": 74.83600534942525,
+    "ttft_ms": 11.928558349609375
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 8,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 3,
+    "latency_ms": 73.65607180145162,
+    "ttft_ms": 10.748624801635742
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 8,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 4,
+    "latency_ms": 72.53240503814595,
+    "ttft_ms": 9.624958038330078
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 8,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 5,
+    "latency_ms": 76.04217339803654,
+    "ttft_ms": 11.477470397949219
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 8,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 6,
+    "latency_ms": 74.9840717439838,
+    "ttft_ms": 10.419368743896484
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 8,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 7,
+    "latency_ms": 73.94766618062931,
+    "ttft_ms": 9.382963180541992
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 8,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 8,
+    "latency_ms": 8629.272620456504,
+    "ttft_ms": 11.79647445678711
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 8,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 9,
+    "latency_ms": 76.02889707413851,
+    "ttft_ms": 13.41104507446289
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 8,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 10,
+    "latency_ms": 74.66323545304476,
+    "ttft_ms": 12.04538345336914
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 8,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 11,
+    "latency_ms": 73.4020011695975,
+    "ttft_ms": 10.784149169921875
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 8,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 12,
+    "latency_ms": 76.82412773920078,
+    "ttft_ms": 12.413501739501953
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 8,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 13,
+    "latency_ms": 75.69664627862949,
+    "ttft_ms": 11.286020278930664
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 8,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 14,
+    "latency_ms": 74.6008744890787,
+    "ttft_ms": 10.190248489379883
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 8,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 15,
+    "latency_ms": 73.53967339349765,
+    "ttft_ms": 9.129047393798828
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 8,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 16,
+    "latency_ms": 8629.562833769342,
+    "ttft_ms": 12.136697769165039
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 8,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 17,
+    "latency_ms": 76.64537142636618,
+    "ttft_ms": 13.818502426147461
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 8,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 18,
+    "latency_ms": 75.24823855283103,
+    "ttft_ms": 12.421369552612305
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 8,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 19,
+    "latency_ms": 73.96459292294821,
+    "ttft_ms": 11.137723922729492
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 8,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 20,
+    "latency_ms": 72.81231593015036,
+    "ttft_ms": 9.98544692993164
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 8,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 21,
+    "latency_ms": 76.22130356958223,
+    "ttft_ms": 11.613130569458008
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 8,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 22,
+    "latency_ms": 75.14365159204317,
+    "ttft_ms": 10.535478591918945
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 8,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 23,
+    "latency_ms": 74.08531151941133,
+    "ttft_ms": 9.47713851928711
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 8,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 24,
+    "latency_ms": 8629.761936473187,
+    "ttft_ms": 11.860847473144531
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 8,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 25,
+    "latency_ms": 76.1248914841417,
+    "ttft_ms": 13.49329948425293
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 8,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 26,
+    "latency_ms": 74.72871228492295,
+    "ttft_ms": 12.09712028503418
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 8,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 27,
+    "latency_ms": 73.46771642005478,
+    "ttft_ms": 10.836124420166016
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 8,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 28,
+    "latency_ms": 76.89866778082433,
+    "ttft_ms": 12.46023178100586
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 8,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 29,
+    "latency_ms": 75.78453776068272,
+    "ttft_ms": 11.346101760864258
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 8,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 30,
+    "latency_ms": 74.6980642957169,
+    "ttft_ms": 10.259628295898438
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 8,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 31,
+    "latency_ms": 73.63734003729405,
+    "ttft_ms": 9.198904037475586
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 8,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 32,
+    "latency_ms": 8629.603626171502,
+    "ttft_ms": 11.63625717163086
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 8,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 33,
+    "latency_ms": 76.17789079131398,
+    "ttft_ms": 13.230323791503906
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 8,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 34,
+    "latency_ms": 74.83464051665578,
+    "ttft_ms": 11.887073516845703
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 8,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 35,
+    "latency_ms": 73.62728883208547,
+    "ttft_ms": 10.67972183227539
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 8,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 36,
+    "latency_ms": 72.5021915573052,
+    "ttft_ms": 9.554624557495117
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 8,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 37,
+    "latency_ms": 75.98257482095505,
+    "ttft_ms": 11.436700820922852
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 8,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 38,
+    "latency_ms": 74.9075454477861,
+    "ttft_ms": 10.361671447753906
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 8,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 39,
+    "latency_ms": 73.86446416421677,
+    "ttft_ms": 9.31859016418457
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 8,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 40,
+    "latency_ms": 8629.784042941083,
+    "ttft_ms": 11.836051940917969
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 8,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 41,
+    "latency_ms": 76.18259268429028,
+    "ttft_ms": 13.580560684204102
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 8,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 42,
+    "latency_ms": 74.81597738888013,
+    "ttft_ms": 12.213945388793945
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 8,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 43,
+    "latency_ms": 73.56761770870435,
+    "ttft_ms": 10.965585708618164
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 8,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 44,
+    "latency_ms": 77.00062523554152,
+    "ttft_ms": 12.558460235595703
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 8,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 45,
+    "latency_ms": 75.88935623834914,
+    "ttft_ms": 11.44719123840332
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 8,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 46,
+    "latency_ms": 74.69726334284132,
+    "ttft_ms": 10.255098342895508
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 8,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 47,
+    "latency_ms": 73.52972756098097,
+    "ttft_ms": 9.087562561035156
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 8,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 48,
+    "latency_ms": 8630.076283762719,
+    "ttft_ms": 11.980056762695312
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 8,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 49,
+    "latency_ms": 76.29810643084056,
+    "ttft_ms": 13.341188430786133
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 8,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 50,
+    "latency_ms": 74.9457962501765,
+    "ttft_ms": 11.98887825012207
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 8,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 51,
+    "latency_ms": 73.75179600603587,
+    "ttft_ms": 10.794878005981445
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 8,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 52,
+    "latency_ms": 72.61811566240794,
+    "ttft_ms": 9.661197662353516
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 8,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 53,
+    "latency_ms": 76.0756035574559,
+    "ttft_ms": 11.507749557495117
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 8,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 54,
+    "latency_ms": 74.99461371980942,
+    "ttft_ms": 10.426759719848633
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 8,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 55,
+    "latency_ms": 73.94724090181626,
+    "ttft_ms": 9.379386901855469
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 32,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 0,
+    "latency_ms": 11786.314762643542,
+    "ttft_ms": 34.14559364318848
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 32,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 1,
+    "latency_ms": 108.53910889863982,
+    "ttft_ms": 32.41133689880371
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 32,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 2,
+    "latency_ms": 107.22780671358123,
+    "ttft_ms": 31.100034713745117
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 32,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 3,
+    "latency_ms": 106.09078850984588,
+    "ttft_ms": 29.963016510009766
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 32,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 4,
+    "latency_ms": 106.53851581128038,
+    "ttft_ms": 29.107093811035156
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 32,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 5,
+    "latency_ms": 105.48422885449327,
+    "ttft_ms": 28.052806854248047
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 32,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 6,
+    "latency_ms": 104.4676120332042,
+    "ttft_ms": 27.036190032958984
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 32,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 7,
+    "latency_ms": 103.46649241955674,
+    "ttft_ms": 26.035070419311523
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 32,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 8,
+    "latency_ms": 103.7656958678781,
+    "ttft_ms": 25.32219886779785
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 32,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 9,
+    "latency_ms": 102.76672202144255,
+    "ttft_ms": 24.323225021362305
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 32,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 10,
+    "latency_ms": 101.66832762752165,
+    "ttft_ms": 23.224830627441406
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 32,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 11,
+    "latency_ms": 100.6543334106027,
+    "ttft_ms": 22.21083641052246
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 32,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 12,
+    "latency_ms": 11781.949079671904,
+    "ttft_ms": 21.50583267211914
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 32,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 13,
+    "latency_ms": 11780.95511261563,
+    "ttft_ms": 20.511865615844727
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 32,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 14,
+    "latency_ms": 11779.92276016812,
+    "ttft_ms": 19.47951316833496
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 32,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 15,
+    "latency_ms": 11778.922832647368,
+    "ttft_ms": 18.479585647583008
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 32,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 16,
+    "latency_ms": 11777.931726614042,
+    "ttft_ms": 17.488479614257812
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 32,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 17,
+    "latency_ms": 95.33014258840922,
+    "ttft_ms": 16.861915588378906
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 32,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 18,
+    "latency_ms": 94.28658446768168,
+    "ttft_ms": 15.818357467651367
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 32,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 19,
+    "latency_ms": 93.29190215566996,
+    "ttft_ms": 14.823675155639648
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 32,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 20,
+    "latency_ms": 92.31343230703715,
+    "ttft_ms": 13.845205307006836
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 32,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 21,
+    "latency_ms": 11778.699783479624,
+    "ttft_ms": 16.360044479370117
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 32,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 22,
+    "latency_ms": 11777.712253724985,
+    "ttft_ms": 15.372514724731445
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 32,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 23,
+    "latency_ms": 11776.708988344126,
+    "ttft_ms": 14.36924934387207
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 32,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 24,
+    "latency_ms": 11775.661853944712,
+    "ttft_ms": 13.322114944458008
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 32,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 25,
+    "latency_ms": 11774.584440385752,
+    "ttft_ms": 12.244701385498047
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 32,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 26,
+    "latency_ms": 11778.377973284933,
+    "ttft_ms": 16.8759822845459
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 32,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 27,
+    "latency_ms": 11777.385913577291,
+    "ttft_ms": 15.883922576904297
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 32,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 28,
+    "latency_ms": 11776.34855433962,
+    "ttft_ms": 14.846563339233398
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 32,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 29,
+    "latency_ms": 11775.357686724874,
+    "ttft_ms": 13.855695724487305
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 32,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 30,
+    "latency_ms": 11774.379932131978,
+    "ttft_ms": 12.877941131591797
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 32,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 31,
+    "latency_ms": 11777.665798874295,
+    "ttft_ms": 17.884492874145508
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 32,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 32,
+    "latency_ms": 13054.750666567998,
+    "ttft_ms": 33.980369567871094
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 32,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 33,
+    "latency_ms": 13056.384928213902,
+    "ttft_ms": 32.29475021362305
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 32,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 34,
+    "latency_ms": 13055.168755041905,
+    "ttft_ms": 31.078577041625977
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 32,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 35,
+    "latency_ms": 13054.081089484043,
+    "ttft_ms": 29.99091148376465
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 32,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 36,
+    "latency_ms": 13053.028709875889,
+    "ttft_ms": 28.93853187561035
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 32,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 37,
+    "latency_ms": 13054.839058420384,
+    "ttft_ms": 28.196096420288086
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 32,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 38,
+    "latency_ms": 13053.82387211057,
+    "ttft_ms": 27.180910110473633
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 32,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 39,
+    "latency_ms": 13052.81822254392,
+    "ttft_ms": 26.175260543823242
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 32,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 40,
+    "latency_ms": 13051.814480325902,
+    "ttft_ms": 25.171518325805664
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 32,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 41,
+    "latency_ms": 13053.105441890239,
+    "ttft_ms": 24.46269989013672
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 32,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 42,
+    "latency_ms": 13052.013961635112,
+    "ttft_ms": 23.371219635009766
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 32,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 43,
+    "latency_ms": 13050.992338023661,
+    "ttft_ms": 22.34959602355957
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 32,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 44,
+    "latency_ms": 13049.995271525859,
+    "ttft_ms": 21.352529525756836
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 32,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 45,
+    "latency_ms": 13049.810465413884,
+    "ttft_ms": 20.66326141357422
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 32,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 46,
+    "latency_ms": 13048.775967199163,
+    "ttft_ms": 19.62876319885254
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 32,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 47,
+    "latency_ms": 13047.77341707404,
+    "ttft_ms": 18.62621307373047
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 32,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 48,
+    "latency_ms": 13046.792324621038,
+    "ttft_ms": 17.64512062072754
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 32,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 49,
+    "latency_ms": 97.17676953914633,
+    "ttft_ms": 16.88694953918457
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 32,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 50,
+    "latency_ms": 96.10054807308188,
+    "ttft_ms": 15.810728073120117
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 32,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 51,
+    "latency_ms": 95.07773236873618,
+    "ttft_ms": 14.787912368774414
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 32,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 52,
+    "latency_ms": 94.08328847530356,
+    "ttft_ms": 13.793468475341797
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 32,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 53,
+    "latency_ms": 96.97079710440448,
+    "ttft_ms": 16.386032104492188
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 32,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 54,
+    "latency_ms": 95.97420744375995,
+    "ttft_ms": 15.389442443847656
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 32,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 55,
+    "latency_ms": 94.9277883000832,
+    "ttft_ms": 14.343023300170898
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 32,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 56,
+    "latency_ms": 93.93167547659687,
+    "ttft_ms": 13.34691047668457
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 32,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 57,
+    "latency_ms": 92.94700674490741,
+    "ttft_ms": 12.362241744995117
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 32,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 58,
+    "latency_ms": 13044.803224189309,
+    "ttft_ms": 17.113447189331055
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 32,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 59,
+    "latency_ms": 13043.778024299172,
+    "ttft_ms": 16.088247299194336
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 32,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 60,
+    "latency_ms": 13042.778335197,
+    "ttft_ms": 15.088558197021484
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 32,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 61,
+    "latency_ms": 13041.792235953835,
+    "ttft_ms": 14.102458953857422
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 32,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 62,
+    "latency_ms": 13040.64210472825,
+    "ttft_ms": 12.952327728271484
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 32,
+    "precision": "bf16",
+    "max_output_tokens": 2048,
+    "run_id": 0,
+    "request_idx": 63,
+    "latency_ms": 13043.93671765547,
+    "ttft_ms": 17.971515655517578
+  }
+]

@@ -1,0 +1,102 @@
+[
+  {
+    "resolution": 1024,
+    "batch_size": 1,
+    "precision": "bf16",
+    "max_output_tokens": 256,
+    "run_id": 0,
+    "request_idx": 0,
+    "latency_ms": 246.28723658088347,
+    "ttft_ms": 4.778623580932617
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 1,
+    "precision": "bf16",
+    "max_output_tokens": 256,
+    "run_id": 0,
+    "request_idx": 1,
+    "latency_ms": 246.45461884665565,
+    "ttft_ms": 4.687070846557617
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 1,
+    "precision": "bf16",
+    "max_output_tokens": 256,
+    "run_id": 0,
+    "request_idx": 2,
+    "latency_ms": 246.18563075614475,
+    "ttft_ms": 4.447221755981445
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 1,
+    "precision": "bf16",
+    "max_output_tokens": 256,
+    "run_id": 0,
+    "request_idx": 3,
+    "latency_ms": 246.6006340343938,
+    "ttft_ms": 4.887104034423828
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 1,
+    "precision": "bf16",
+    "max_output_tokens": 256,
+    "run_id": 0,
+    "request_idx": 4,
+    "latency_ms": 246.35207951882876,
+    "ttft_ms": 4.708528518676758
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 1,
+    "precision": "bf16",
+    "max_output_tokens": 256,
+    "run_id": 0,
+    "request_idx": 5,
+    "latency_ms": 246.3548596324472,
+    "ttft_ms": 4.514932632446289
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 1,
+    "precision": "bf16",
+    "max_output_tokens": 256,
+    "run_id": 0,
+    "request_idx": 6,
+    "latency_ms": 246.42315726509878,
+    "ttft_ms": 4.687309265136719
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 1,
+    "precision": "bf16",
+    "max_output_tokens": 256,
+    "run_id": 0,
+    "request_idx": 7,
+    "latency_ms": 246.64801895028177,
+    "ttft_ms": 5.0220489501953125
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 1,
+    "precision": "bf16",
+    "max_output_tokens": 256,
+    "run_id": 0,
+    "request_idx": 8,
+    "latency_ms": 246.2513322225277,
+    "ttft_ms": 4.65083122253418
+  },
+  {
+    "resolution": 1024,
+    "batch_size": 1,
+    "precision": "bf16",
+    "max_output_tokens": 256,
+    "run_id": 0,
+    "request_idx": 9,
+    "latency_ms": 246.3369368356325,
+    "ttft_ms": 4.571437835693359
+  }
+]
