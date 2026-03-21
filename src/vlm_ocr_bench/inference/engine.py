@@ -171,24 +171,40 @@ class VLLMEngine:
         else:
             gpu_elapsed_ms = wall_elapsed_ms
 
-        # Build results.
-        #
-        # Latency attribution note: vLLM uses continuous batching so requests
-        # within a batch may complete at very different times.  Dividing the
-        # total GPU interval evenly across all outputs is a simplification —
-        # per-request latencies will be identical for batch_size > 1, making
-        # percentiles meaningful only when batch_size == 1.  Accurate per-
-        # request timing requires the AsyncLLMEngine with streaming callbacks.
-        per_request_ms = gpu_elapsed_ms / max(len(outputs), 1)
+        # Build results using per-request metrics from vLLM when available.
+        # vLLM's RequestOutput.metrics (RequestStateStats) provides
+        # first_token_latency, arrival_time, and last_token_ts for each request.
+        # Fall back to dividing total GPU time evenly when metrics are absent.
+        per_request_ms_fallback = gpu_elapsed_ms / max(len(outputs), 1)
 
         for output in outputs:
             generated_text = output.outputs[0].text if output.outputs else ""
             num_output_tokens = len(output.outputs[0].token_ids) if output.outputs else 0
             num_input_tokens = len(output.prompt_token_ids) if output.prompt_token_ids else 0
 
+            # Extract per-request timing from vLLM metrics.
+            # RequestStateStats provides:
+            #   first_token_latency: wall-clock TTFT in seconds
+            #   first_token_ts / last_token_ts: monotonic timestamps
+            ttft_ms = 0.0
+            generation_ms = 0.0
+            total_ms = per_request_ms_fallback
+            metrics = getattr(output, "metrics", None)
+            if metrics is not None:
+                ftl = getattr(metrics, "first_token_latency", 0.0) or 0.0
+                first_ts = getattr(metrics, "first_token_ts", 0.0) or 0.0
+                last_ts = getattr(metrics, "last_token_ts", 0.0) or 0.0
+
+                if ftl > 0:
+                    ttft_ms = ftl * 1000.0  # seconds → ms
+                if first_ts > 0 and last_ts > first_ts:
+                    generation_ms = (last_ts - first_ts) * 1000.0
+                if ttft_ms > 0:
+                    total_ms = ttft_ms + generation_ms
+
             tps = (
-                num_output_tokens / (per_request_ms / 1000.0)
-                if per_request_ms > 0 and num_output_tokens > 0
+                num_output_tokens / (total_ms / 1000.0)
+                if total_ms > 0 and num_output_tokens > 0
                 else 0.0
             )
 
@@ -197,11 +213,9 @@ class VLLMEngine:
                     output_text=generated_text,
                     num_output_tokens=num_output_tokens,
                     num_input_tokens=num_input_tokens,
-                    # TTFT requires streaming (AsyncLLMEngine); not available in
-                    # batch mode.  Report 0.0 so callers can detect the absence.
-                    ttft_ms=0.0,
-                    generation_time_ms=per_request_ms,
-                    total_time_ms=per_request_ms,
+                    ttft_ms=ttft_ms,
+                    generation_time_ms=generation_ms if generation_ms > 0 else total_ms,
+                    total_time_ms=total_ms,
                     tokens_per_second=tps,
                 )
             )
