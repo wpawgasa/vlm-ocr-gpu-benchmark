@@ -84,7 +84,13 @@ class VLMDataCollator:
             if remainder != 0:
                 max_seq_len += self._pad_to_multiple_of - remainder
 
-        pad_token_id = self._tokenizer.pad_token_id
+        # Some VLM processors (e.g. Qwen2_5_VLProcessor) don't expose
+        # pad_token_id directly — fall back to the inner tokenizer.
+        pad_token_id = getattr(self._tokenizer, "pad_token_id", None)
+        if pad_token_id is None:
+            inner = getattr(self._tokenizer, "tokenizer", None)
+            if inner is not None:
+                pad_token_id = getattr(inner, "pad_token_id", None)
         if pad_token_id is None:
             pad_token_id = 0
 

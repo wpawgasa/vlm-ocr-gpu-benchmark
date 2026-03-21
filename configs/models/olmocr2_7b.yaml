@@ -1,6 +1,6 @@
 # olmOCR2 7B model configuration
 name: olmocr2_7b
-hf_model_id: allenai/olmOCR2-7B-0225-preview
+hf_model_id: allenai/olmOCR-2-7B-1025
 params_billion: 7.0
 tier: midsize
 adapter: OlmOcrAdapter

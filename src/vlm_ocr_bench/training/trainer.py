@@ -408,12 +408,28 @@ class TrainingBenchmarkRunner:
             if getattr(_inner, "pad_token", None) is None:
                 _inner.pad_token = getattr(_inner, "eos_token", None)
 
-            model = AutoModelForVision2Seq.from_pretrained(  # type: ignore[no-untyped-call]
-                self._model_config.hf_model_id,
-                torch_dtype=dtype,
-                trust_remote_code=True,
-                device_map="auto",
-            )
+            # Try AutoModelForVision2Seq first; fall back to AutoModel for
+            # architectures not registered in the Vision2Seq mapping (e.g. PaddleOCR-VL).
+            try:
+                model = AutoModelForVision2Seq.from_pretrained(  # type: ignore[no-untyped-call]
+                    self._model_config.hf_model_id,
+                    torch_dtype=dtype,
+                    trust_remote_code=True,
+                    device_map="auto",
+                )
+            except ValueError:
+                from transformers import AutoModel
+
+                logger.info(
+                    "falling_back_to_auto_model",
+                    model=self._model_config.hf_model_id,
+                )
+                model = AutoModel.from_pretrained(  # type: ignore[no-untyped-call]
+                    self._model_config.hf_model_id,
+                    torch_dtype=dtype,
+                    trust_remote_code=True,
+                    device_map="auto",
+                )
 
             # Apply LoRA
             from peft import LoraConfig, get_peft_model

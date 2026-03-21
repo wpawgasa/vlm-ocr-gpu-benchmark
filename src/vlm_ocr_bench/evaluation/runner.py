@@ -131,7 +131,8 @@ class QualityEvalRunner:
         logger.info(
             "quality_evaluation_complete",
             model=self._model_config.name,
-            num_benchmarks=len(self._quality_config.benchmarks),
+            num_benchmarks=len(result.benchmarks),
+            num_benchmarks_configured=len(self._quality_config.benchmarks),
             total_time_s=round(result.total_wall_time_s, 1),
         )
         return result

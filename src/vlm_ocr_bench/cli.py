@@ -275,10 +275,19 @@ def _run_single_phase(
         qual_runner = QualityEvalRunner(model_cfg, gpu_cfg, config.quality)
         qual_result = qual_runner.run()
         save_phase_results(phase, qual_result, config.output_dir)
-        console.print(
-            f"    Quality: {len(qual_result.benchmarks)} benchmarks, "
-            f"{qual_result.total_wall_time_s:.1f}s"
-        )
+        num_configured = len(config.quality.benchmarks) * len(config.quality.precision_modes)
+        num_completed = len(qual_result.benchmarks)
+        if num_completed < num_configured:
+            console.print(
+                f"    Quality: {num_completed}/{num_configured} benchmark-precision "
+                f"combinations completed, {qual_result.total_wall_time_s:.1f}s"
+                f" [yellow](check logs for errors)[/yellow]"
+            )
+        else:
+            console.print(
+                f"    Quality: {num_completed} benchmarks, "
+                f"{qual_result.total_wall_time_s:.1f}s"
+            )
 
     else:
         console.print(f"    [yellow]Unknown phase: {phase}[/yellow]")
