@@ -1,7 +1,7 @@
-# Short GPU benchmark: inference throughput/latency across model sizes
-# Focuses on GPU performance characteristics, not model quality.
+# Short GPU benchmark: inference, training, and quality across model sizes
+# Measures GPU performance characteristics with minimal workloads.
 name: gpu_bench_short
-description: "Quick GPU benchmark — 3 model tiers, key batch sizes, inference only"
+description: "Quick GPU benchmark — 3 model tiers, all phases, minimal settings"
 
 models:
   - paddleocr_vl_0.9b   # 0.9B — ultra compact
@@ -13,6 +13,8 @@ gpus:
 
 phases:
   - inference
+  - training
+  - quality
 
 inference:
   batch_sizes: [1, 8, 32]
@@ -23,3 +25,23 @@ inference:
   measurement_requests: 50
   runs_per_config: 1
   cooldown_seconds: 10
+
+training:
+  epochs: 1
+  micro_batch_sizes: [1, 2, 4]
+  precision_modes: [bf16]
+  dataset: docmatix_50k
+  runs_per_config: 1
+  measurement_steps: 100
+  warmup_steps: 10
+
+quality:
+  benchmarks:
+    - omnidocbench_v1.5
+  metrics:
+    - edit_distance
+    - bleu
+    - meteor
+  precision_modes: [bf16]
+  per_document_type: false
+  max_samples: 50
